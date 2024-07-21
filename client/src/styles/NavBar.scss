@@ -1,0 +1,56 @@
+@import "mixin";
+@import "theme.scss";
+
+nav.navbar {
+  @include flex(row, center, space-between);
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--textColor);
+  position: sticky;
+  padding:1rem 0.5rem;
+  background-color: var(--bgColor);
+  z-index: 3;
+  transition:top 0.4s ease-in;
+  .nav_logout_toggle{
+    display: flex;
+    justify-content: space-around;
+    width: 25%;
+    align-items: center;
+    .loginBtn{
+      background-color: transparent;
+      border:1px solid #2196F3;
+      color: #2196F3;
+    }
+  }
+  .icons{
+    @include flex(row, center, space-between);
+    cursor: pointer;
+    .hamburger_icon{
+      display: none;
+      @media (min-width:768px) {
+        display: block;
+      }
+    }
+  }
+  &.show{
+    top: 0
+  }
+  &.hide{
+    top:-100px;
+  }
+  img {
+    @include square(3rem);
+  }
+  .search-bar{
+    width: 40%;
+    position: relative;
+
+    >input{
+        @include inputStyle(2px solid var(--textColor),0.8rem,100%,transparent);
+        border-radius: 5px;
+      padding-left: 3rem;
+      color: var(--textColor);
+
+    }
+  }
+
+}

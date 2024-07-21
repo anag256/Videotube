@@ -1,0 +1,13 @@
+@import "mixin";
+.container{
+//    @include flex(column,center,center,0);
+
+   height: 100%;
+
+   @media (min-width: 768px) {
+    position: relative;
+    @include flex(row-reverse,flex-start,space-between,0);
+
+   }
+
+}

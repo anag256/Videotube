@@ -1,0 +1,27 @@
+@import "mixin";
+.comment_details{
+    margin: 2rem 1.5rem;
+    .profile_details{
+        >img{
+            @include square(3rem);
+            border-radius: 50%;
+        }
+        @include flex(row,center,flex-start);
+        >.comment_detail{
+            .profile{
+                @include flex(row,center,space-between);
+                margin: 0.4rem 1rem;
+            }
+        }
+    }
+    .show_replies{
+        color: #065fd4;
+        cursor: pointer;
+        font-size: 0.7rem;
+    }
+    >p{
+      padding: 1.5rem 0;
+    }
+
+
+}

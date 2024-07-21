@@ -1,0 +1,68 @@
+@import "mixin";
+
+.sidelist {
+
+
+    height: auto;
+    position: sticky;
+    bottom: 0;
+    background: var(--bgColor);
+    padding-bottom: 0.5rem;
+    opacity: 1;
+    transition: 0.6s ease-in-out;
+    z-index: 2;
+    @media(min-width:768px) {
+        transform: translateX(-1000px);
+        opacity: 0;
+        display: block;
+        // position: absolute !important;
+        // width: fit-content;
+        // left: 0;
+        height: 100%;
+        position: static;
+        padding-right: 1.2rem;
+        border-right: 2px solid var(--textColor);
+        width: auto;
+
+        position: absolute;
+        left: 0;
+
+
+
+    }
+
+    >ul {
+        @include flex(row, center, space-around);
+        gap: 0.35rem;
+
+        @media(min-width:768px) {
+            display: block;
+        }
+
+        padding-top:2rem;
+
+        >li {
+            @include flex(column, center, flex-start);
+            font-size: 0.8rem;
+            padding: 0 0.2rem;
+
+            overflow: hidden;
+
+            cursor: pointer;
+
+            @media(min-width:768px) {
+                font-size: 1rem;
+                padding: 1rem 1.5rem;
+                margin-bottom: 0.8rem;
+                @include flex(row, center, flex-start);
+
+                border: 2px solid var(--textColor);
+
+                &:hover {
+                    background-color: #2196F3;
+                }
+
+            }
+        }
+    }
+}

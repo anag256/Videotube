@@ -1,0 +1,128 @@
+@import "mixin";
+
+.videoDetail{
+
+    >div{
+        flex:1;
+        @media(min-width:1024px){
+            @include grid(5fr 3fr,unset,2rem);
+            padding: 2rem;
+        }
+        .vidSection {
+
+            iframe{
+                height: 28rem;
+                border-radius: 0.8rem;
+
+            }
+            .videoDetails{
+                border: 2px solid;
+                border-radius: 0.5rem;
+                padding: 2rem;
+                margin: 2rem 0;
+                .video_title_reactions{
+                    @include flex(row,center,space-between);
+                    .reactions{
+                        @include flex(row,center,center,1.4rem);
+
+                     .likes, .dislikes{
+                        @include flex(row,center,center,0.3rem);
+                    }
+                  .reaction_icon{
+                    cursor: pointer;
+                    &.liked,&.disliked{
+                        color: #2196F3;
+                        transform: scale(1.2);
+                        transition: 0.4s ease-in;
+                    }
+                  }
+                }
+                }
+                .flx{
+                    @include flex(row,center,flex-start);
+                    margin: 0.6rem 0;
+
+                }
+                .channel_detail_section{
+
+                    >div{
+                        @include flex(row,center,space-between);
+                        margin: 1.5rem 0;
+                        >div{
+                            @include flex(row,center);
+                            >img{
+                                @include square(3rem);
+                                border-radius: 50%;
+                            }
+                        }
+
+
+                    }
+                    >p{
+                        margin-top: 1rem;
+                    }
+                }
+            }
+            .comment_section{
+                border: 2px solid var(--textColor);
+                padding: 1rem;
+                border-radius: 0.6rem;
+                >input{
+                    width: 100%;
+                    padding: 1rem;
+                    border: 2px solid;
+                    border-radius: 0.5rem;
+                    outline: none;
+                    margin: 1.2rem 0;
+                }
+                >.comment_details{
+                    border-bottom: 1px solid var(--textColor);
+                    padding-bottom: 1.3rem;
+                }
+
+            }
+
+        }
+        .video_recommendations{
+            padding: 1rem 0;
+            @media(min-width:768px){
+                padding: 0 0;
+                margin-top: 30px;
+                max-width: 100%;
+            }
+
+            .videoListItem{
+                @include flex();
+                padding: 1rem;
+                border: 2px solid var(--textColor);
+                margin: 2rem 0;
+                @media(min-width:768px){
+                    &:first-child{
+                        margin: 1rem 0;
+                        margin-top: 0;
+                    }
+
+                }
+                >img{
+                    width: 10rem;
+                    height: 6.5rem;
+                }
+                >div{
+                    >h4{
+                        margin-bottom: 1.2rem;
+                    }
+                    >div{
+                        @include flex(row,flex-start,space-between);
+                        margin-top: 1rem;
+                        >h6{
+                            font-size: 0.6rem;
+                            font-weight: 300;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+}
