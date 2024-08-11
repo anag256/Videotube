@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import NavBar from "../components/NavBar";
 import SideBar from "../components/SideBar";
 import "../styles/VideoDetailPage.scss";
-import Video, { video } from "../components/Video";
-import { videos } from "../data/videos";
 import Comment from "../components/Comment";
 import { comments } from "../data/comments";
 import { AiTwotoneLike, AiTwotoneDislike } from "react-icons/ai";

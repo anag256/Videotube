@@ -1,113 +1,51 @@
 @import "mixin";
 @import "theme.scss";
 
-.loginContainer {
-  height: 100vh;
 
-  > .login_form {
-    height: 100%;
+.google_login {
+  margin-top: 2rem;
+  background: #fff;
+  border: 1px solid #fff;
+  padding: 0.6rem 0.8rem;
+  @include flex();
 
-    > .login_form_details {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      max-width: 50%;
-      margin: 0 auto;
-      height: 100%;
+  >img {
+    @include square(2rem);
+    cursor: pointer;
+  }
 
-      > .google_login {
-        margin-top: 2rem;
-      }
+  >h4 {
+    color: #201717;
+    font-weight: 500;
+  }
+}
 
-      > img {
-        @include square(4rem);
-        cursor: pointer;
-      }
 
-      > .login {
-        margin: 2rem;
-      }
 
-      .passwordContainer {
-        position: relative;
+.login {
+  margin: 2rem;
+}
 
-        > button {
-          position: absolute;
-          top: 50%;
-          right: 2rem;
-          transform: translate(-50%, -50%);
-          cursor: pointer;
-          outline: none;
-          border: none;
-          background-color: transparent;
-        }
-      }
 
-      input {
-        width: 30rem;
-        padding: 1.1rem;
-        margin: 0.8rem;
-        border-radius: 1rem;
-        outline: none;
-        border: none;
-      }
 
-      .profile_pic {
-        .custom-file-upload {
-          input[type="file"] {
-            width: 30rem;
-            position: absolute;
-            top: 0;
-            left: 0;
-            cursor: pointer;
-            opacity: 0;
-          }
+.OR_with_line {
+  margin: 2rem 1rem;
+  width: 100%;
+  position: relative;
 
-          border: 1px solid #ccc;
-          display: inline-block;
-          padding: 6px 12px;
-          cursor: pointer;
-          padding: 1.1rem;
-          width: 30rem;
-          border-radius: 1rem;
-          margin: 1.1rem;
-          position: relative;
-        }
-      }
+  >hr {
+    width: 70%;
+    border: none;
+    border-top: 2px dashed var(--textColor);
+    margin: auto;
+  }
 
-      > h5 {
-        margin-top: 1.5rem;
-        text-align: center;
-
-        > span {
-          margin-left: 1rem;
-          color: #0000ee;
-          text-decoration: underline;
-        }
-      }
-
-      .OR_with_line {
-        margin: 2rem 1rem;
-        width: 100%;
-        position: relative;
-
-        > hr {
-          width: 70%;
-          border: none;
-          border-top: 2px dashed var(--textColor);
-          margin: auto;
-        }
-
-        > h4 {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background-color: var(--bgColor);
-          padding: 0 1rem;
-        }
-      }
-    }
+  >h4 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--bgColor);
+    padding: 0 1rem;
   }
 }

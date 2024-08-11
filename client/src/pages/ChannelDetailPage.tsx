@@ -6,6 +6,7 @@ import { videos } from "../data/videos";
 import Video, { video } from "../components/Video";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+
 function ChannelDetailPage() {
   const {showSidebar}=useSelector((state:RootState)=>state.appState);
   return (
