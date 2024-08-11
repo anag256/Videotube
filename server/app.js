@@ -19,9 +19,16 @@ app.use(cookieParser());
 import userRouter from "./router/user.routes.js";
 import subscriptionRouter from "./router/subscription.routes.js";
 import videoRouter from "./router/video.routes.js";
+import commentRouter from "./router/comment.routes.js";
+import likesRouter from "./router/like.route.js";
+import dislikesRouter from "./router/dislike.route.js";
+
 
 app.use("/user", userRouter);
 app.use("/subscribe", subscriptionRouter);
 app.use("/video",videoRouter);
+app.use("/comment",commentRouter);
+app.use("/video/like",likesRouter);
+app.use("/video/dislike",dislikesRouter);
 
 export { app };

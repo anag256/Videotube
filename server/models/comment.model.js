@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { MONGODB_EXCLUDE, MONGODB_EXCLUDE_CREATE_UPDATE_DATE } from "../constants/selectExlusion.js";
 
 const commentSchema = new Schema(
   {
@@ -32,7 +33,8 @@ const commentSchema = new Schema(
 );
 
 commentSchema.pre("find", function (next) {
-  this.populate({ path: "replies", populate: { path: "commentedBy" } });
+  this.populate({path:'commentedBy',select:`${MONGODB_EXCLUDE} -coverImage -watchHistory -email`})
+  this.populate({ path: "replies", select:MONGODB_EXCLUDE_CREATE_UPDATE_DATE, populate: { path: "commentedBy" ,select:`${MONGODB_EXCLUDE} -coverImage -watchHistory -email`} },);
   next();
 });
 export const Comment = mongoose.model("Comment", commentSchema);

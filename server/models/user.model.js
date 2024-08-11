@@ -29,7 +29,6 @@ const userSchema = new Schema(
     avatar: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
       index: true,
@@ -65,7 +64,6 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 userSchema.methods.generateAccessToken = function () {
-  console.log("coming in")
   return jwt.sign(
     {
       _id: this._id,

@@ -4,12 +4,21 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { MONGODB_EXCLUDE, MONGODB_EXCLUDE_PWD_REFRESHTOKEN } from "../constants/selectExlusion.js";
+import {
+  MONGODB_EXCLUDE,
+  MONGODB_EXCLUDE_PWD_REFRESHTOKEN,
+} from "../constants/selectExlusion.js";
 
-const incrementVideoViews=asyncHandler(async(videoId)=>{
-  const updatedVideo=await Video.findByIdAndUpdate(videoId,{ $inc: { views: 1 } });
-  return updatedVideo;
-})
+const incrementVideoViews = async (videoId) => {
+  try {
+    const updatedVideo = await Video.findByIdAndUpdate(videoId, {
+      $inc: { views: 1 },
+    });
+    return updatedVideo;
+  } catch (err) {
+    console.error(err);
+  }
+};
 const uploadVideo = asyncHandler(async (req, res, next) => {
   const { title, description, isPublished, videoPath } = req.body;
   const thumbnailLocalPath = req.file?.path;
@@ -43,7 +52,7 @@ const getChannelVideos = asyncHandler(async (req, res, next) => {
 });
 
 const getAllVideos = asyncHandler(async (req, res, next) => {
-  const videos = await Video.find().select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);;
+  const videos = await Video.find().select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);
   if (!videos) throw new ApiError(404, "No videos available");
   return res
     .status(200)
@@ -54,7 +63,9 @@ const getRecommendationVideos = asyncHandler(async (req, res, next) => {
   const { currentVideoID } = req.params;
   const videos = await Video.find({
     _id: { $ne: currentVideoID },
-  }).limit(10).select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);
+  })
+    .limit(10)
+    .select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);
   if (!videos || videos.length === 0)
     throw new ApiError(404, "No videos available");
   return res
@@ -64,14 +75,17 @@ const getRecommendationVideos = asyncHandler(async (req, res, next) => {
 
 const getPaginatedVideos = asyncHandler(async (req, res, next) => {
   const { page = 1, limit = 10 } = req.query;
-  console.log(page,limit)
+  console.log(page, limit);
   const skip = (page - 1) * limit;
   if (page < 1 || limit < 1) {
     return res
       .status(400)
       .json(new ApiError(400, "Invalid page or limit value"));
   }
-  const videos = await Video.find().skip(skip).limit(limit).select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);
+  const videos = await Video.find()
+    .skip(skip)
+    .limit(limit)
+    .select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);
   const totalVideos = await Video.countDocuments();
   return res.status(200).json(
     new ApiResponse(200, {
@@ -84,16 +98,18 @@ const getPaginatedVideos = asyncHandler(async (req, res, next) => {
   );
 });
 
-const getVideoDetails=asyncHandler(async(req,res,next)=>{
-  const {videoID}=req.params;
-  console.log("videoid",videoID)
- const video= await Video.findById(videoID).populate({
-  path:"owner",
-  select:MONGODB_EXCLUDE
- });
+const getVideoDetails = asyncHandler(async (req, res, next) => {
+  const { videoID } = req.params;
+  console.log("videoid", videoID);
+  const video = await Video.findById(videoID).populate({
+    path: "owner",
+    select: MONGODB_EXCLUDE,
+  });
 
- return res.status(200).json(new ApiResponse(200,video,"Video fetched successfully"))
-})
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "Video fetched successfully"));
+});
 
 export {
   uploadVideo,
@@ -102,5 +118,5 @@ export {
   getRecommendationVideos,
   getPaginatedVideos,
   incrementVideoViews,
-  getVideoDetails
+  getVideoDetails,
 };

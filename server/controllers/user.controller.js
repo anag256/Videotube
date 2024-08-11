@@ -7,6 +7,10 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { incrementVideoViews } from "./video.controller.js";
 import mongoose from "mongoose";
 import { MONGODB_EXCLUDE } from "../constants/selectExlusion.js";
+import {
+  DEFAULT_COVER_IMAGE,
+  JWT_TOKEN_OPTIONS,
+} from "../constants/userConstants.js";
 
 const generateAccessAndRefreshTokens = async (user) => {
   try {
@@ -65,9 +69,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     refreshToken: "",
     watchHistory: [],
   });
-  const createdUser = await User.findById(user._id).select(
-    MONGODB_EXCLUDE
-  );
+  const createdUser = await User.findById(user._id).select(MONGODB_EXCLUDE);
   return res
     .status(201)
     .json(new ApiResponse(201, createdUser, "User Created Successfully"));
@@ -90,18 +92,12 @@ const loginUser = asyncHandler(async (req, res, next) => {
   if (!isPasswordValid) throw new ApiError(404, "Invalid user credentials");
   const { accessToken, refreshToken } =
     await generateAccessAndRefreshTokens(user);
-  const options = {
-    httpsOnly: true,
-    secure: true,
-  };
   console.log("accessToken", accessToken);
-  const loggedInUser = await User.findById(user._id).select(
-    MONGODB_EXCLUDE
-  );
+  const loggedInUser = await User.findById(user._id).select(MONGODB_EXCLUDE);
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, JWT_TOKEN_OPTIONS)
+    .cookie("refreshToken", refreshToken, JWT_TOKEN_OPTIONS)
     .json(
       new ApiResponse(
         200,
@@ -123,14 +119,11 @@ const logoutUser = asyncHandler(async (req, res, next) => {
     },
     { new: true }
   );
-  const options = {
-    httpsOnly: true,
-    secure: true,
-  };
+
   return res
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken", JWT_TOKEN_OPTIONS)
+    .clearCookie("refreshToken", JWT_TOKEN_OPTIONS)
     .json(new ApiResponse(200, {}, "User logged out"));
 });
 
@@ -257,7 +250,6 @@ const updateWatchHistory = asyncHandler(async (req, res, next) => {
 
   if (userWithExistingView)
     throw new ApiError(409, "User has already viewed the video");
-  // { $inc: { views: 1 } },
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user?._id,
@@ -281,123 +273,175 @@ const updateWatchHistory = asyncHandler(async (req, res, next) => {
   );
 });
 
-const getUserChannelProfile=asyncHandler(async(req,res,next)=>{
-  const {username}=req.params;
+const getUserChannelProfile = asyncHandler(async (req, res, next) => {
+  const { username } = req.params;
 
-  const user=await User.findOne({username});
-  if(!user) throw new ApiError(404,"Channel does not exist")
-  const userProfile=await User.aggregate([
+  const user = await User.findOne({ username });
+  if (!user) throw new ApiError(404, "Channel does not exist");
+  const userProfile = await User.aggregate([
     {
       $match: {
-        username: username?.toLowerCase()
-      }
-    },{
-      $lookup: {
-        from: 'subscriptions',
-        localField: '_id',
-        foreignField: 'subscriber',
-        as: 'SubscribedTo'
+        username: username?.toLowerCase(),
       },
-    },{
-        $lookup: {
-        from: 'subscriptions',
-        localField: '_id',
-        foreignField: 'channel',
-        as: 'Subscribers'
-      }
-    },{
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "SubscribedTo",
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "Subscribers",
+      },
+    },
+    {
       $addFields: {
         SubscribersCount: {
-          $size:'$Subscribers'
+          $size: "$Subscribers",
         },
-        SubscribedToCount:{
-          $size:'$SubscribedTo'
+        SubscribedToCount: {
+          $size: "$SubscribedTo",
         },
-        isSubscribedTo:{
-          $cond:{
-            if:{
-             $in: [ new mongoose.Types.ObjectId(req.user?._id),'$Subscribers.subscriber']
+        isSubscribedTo: {
+          $cond: {
+            if: {
+              $in: [
+                new mongoose.Types.ObjectId(req.user?._id),
+                "$Subscribers.subscriber",
+              ],
             },
             then: true,
-            else: false
-          }
-        }
-      }
-    },{
-      $project:{
-        password:0,
-        refreshToken:0
-      }
-    }
-  ])
-
-  return res
-  .status(200)
-  .json(
-    new ApiResponse(200, userProfile , "User Profile fetched successfully")
-  );
-});
-
-const getUserWatchHistory = asyncHandler(async (req, res, next) => {
-  const watchHistory =
-    await User.aggregate([
-      {
-        $match: {
-          _id:new mongoose.Types.ObjectId(req.user?._id)
-        }
-      },{
-        $lookup: {
-          from: 'videos',
-          localField: 'watchHistory',
-          foreignField: '_id',
-          as: 'watchHistoryData',
-          pipeline:[
-            {
-              $lookup:{
-                from: 'users',
-                localField: 'owner',
-                foreignField: '_id',
-                as: 'owner',
-                pipeline:[
-                  {
-                    $project:{
-                      password:0,
-                      refreshToken:0,
-                      coverImage:0,
-                      thumbnail:0,
-                      email:0
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              $addFields:{
-                owner:{
-                  $first:"$owner"
-                }
-              }
-            }
-          ]
+            else: false,
+          },
         },
-        },{
-        $project: {
-          email:1,
-          username:1,
-          fullName:1,
-          watchHistoryData:1
-        }
-        }
-
-
-    ]);
+      },
+    },
+    {
+      $project: {
+        password: 0,
+        refreshToken: 0,
+      },
+    },
+  ]);
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, watchHistory , "Watch History fetched successfully")
+      new ApiResponse(200, userProfile, "User Profile fetched successfully")
     );
 });
+
+const getUserWatchHistory = asyncHandler(async (req, res, next) => {
+  const watchHistory = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user?._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistoryData",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    password: 0,
+                    refreshToken: 0,
+                    coverImage: 0,
+                    thumbnail: 0,
+                    email: 0,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $addFields: {
+              owner: {
+                $first: "$owner",
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        email: 1,
+        username: 1,
+        fullName: 1,
+        watchHistoryData: 1,
+      },
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, watchHistory, "Watch History fetched successfully")
+    );
+});
+
+const googleSignIn = asyncHandler(async (req, res, next) => {
+  const { email, displayName, emailVerified,photoURL } = req.body;
+  if (!emailVerified)
+    throw new ApiError(400, "Email not verified via google sign in");
+  const user = await User.findOne({ email });
+  if (user) {
+    const { accessToken, refreshToken } =
+      await generateAccessAndRefreshTokens(user);
+
+    console.log("accessToken", accessToken);
+    const loggedInUser = await User.findById(user._id).select(MONGODB_EXCLUDE);
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, JWT_TOKEN_OPTIONS)
+      .cookie("refreshToken", refreshToken, JWT_TOKEN_OPTIONS)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: loggedInUser,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          },
+          "Logged in successfully"
+        )
+      );
+  }
+  const generatedUsername = displayName.toLowerCase().replace(/\s+/g, "");
+  const generatedPassword = Math.random().toString(36).slice(-8);
+  const newUser = await User.create({
+    username: generatedUsername,
+    password: generatedPassword,
+    email,
+    fullName: displayName,
+    avatar: photoURL,
+    coverImage: DEFAULT_COVER_IMAGE,
+    refreshToken: "",
+    watchHistory: [],
+  });
+  const createdUser = await User.findById(newUser._id).select(MONGODB_EXCLUDE);
+  return res
+    .status(201)
+    .json(new ApiResponse(201, createdUser, "User created successfully"));
+});
+
 export {
   registerUser,
   loginUser,
@@ -410,5 +454,6 @@ export {
   updateUserCoverImage,
   updateWatchHistory,
   getUserWatchHistory,
-  getUserChannelProfile
+  getUserChannelProfile,
+  googleSignIn,
 };
