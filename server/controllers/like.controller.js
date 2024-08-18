@@ -20,6 +20,7 @@ const removeLikeIfExists = async (userId, videoId) => {
 
 const toggleLike = asyncHandler(async (req, res, next) => {
   const { videoId } = req.body;
+  console.log("videoID in toggleLike",videoId)
   const removeExistingLike = await removeLikeIfExists(req.user?._id, videoId);
 
   if (removeExistingLike) {

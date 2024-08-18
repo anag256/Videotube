@@ -1,53 +1,158 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
 import SideBar from "../components/SideBar";
 import "../styles/VideoDetailPage.scss";
-import Comment from "../components/Comment";
-import { comments } from "../data/comments";
+import Comment, { comment } from "../components/Comment";
 import { AiTwotoneLike, AiTwotoneDislike } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import {
+  useGetRecommendedVideosQuery,
+  useGetVideoDetailsQuery,
+  useGetVideoReactionsQuery,
+  useToggleDislikesMutation,
+  useToggleLikesMutation,
+} from "../redux/VideoAPI";
+import { useNavigate, useParams } from "react-router-dom";
+import useShowLoader from "../hooks/useShowLoader";
+import { video } from "../components/Video";
+import { formatPublishedDate, handleShowToast } from "../utils/utils";
+import CommentInput from "../components/CommentInput";
+import {
+  useAddCommentMutation,
+  useGetCommentsQuery,
+} from "../redux/commentAPI";
+import { useGetSubscriptionDetailsQuery, useSubscribeMutation, useUpdateWatchHistoryMutation } from "../redux/UserAPI";
+import { skip } from "node:test";
+import { SUBSCRIBE, UNSUBSCRIBE } from "../constants/Actions";
+import Subscription from "../components/Subscription";
 
-const VideoListItem = () => {
+export interface commentInput{
+  value:string;
+  isVisible:boolean;
+}
+const initialComment:commentInput = {
+  value: "",
+  isVisible: false,
+};
+
+const VideoListItem = ({
+  title,
+  thumbnail,
+  owner,
+  views,
+  createdAt,
+  _id,
+}: video) => {
+  const navigate = useNavigate();
   return (
-    <div className="videoListItem">
-      <img src="https://templates.simplified.co/thumb/b1be416d-4eea-49f7-88f9-e57fbfc25481.jpg" />
+    <div
+      className="videoListItem"
+      key={_id}
+      onClick={() => navigate(`/video/${_id}`)}
+    >
+      <img src={thumbnail} />
 
       <div>
-        <h4>JavaScript Fundamentals: Variables and Data Types</h4>
-        <h5>Code Master</h5>
+        <h4>{title}</h4>
+        <h5>{owner?.username}</h5>
         <div>
-          <h6>10.3k Views </h6>
-          <h6>44 minutes ago</h6>
+          <h6>{views} views</h6>
+          <h6>{formatPublishedDate(createdAt)}</h6>
         </div>
       </div>
     </div>
   );
 };
+
+interface commentContainerProps {
+  videoId: string;
+}
+
+function CommentContainer({ videoId }: commentContainerProps) {
+  const { data: comments, isFetching } = useGetCommentsQuery(videoId);
+  const [addComment] = useAddCommentMutation();
+  const [comment, setComment] = useState(initialComment);
+
+  const { user } = useSelector((state: RootState) => state.appState);
+  useShowLoader(isFetching);
+  const onCancel = (defaultComment:commentInput) => setComment(defaultComment);
+  const onAddComment = async (
+    commentText: string,
+    parentComment: string | null
+  ) => {
+    const result = await addComment({
+      comment: commentText,
+      commentedBy: user.userId,
+      videoId: videoId,
+      parentComment: parentComment,
+    });
+    setComment(initialComment);
+  };
+  return (
+    <section className="comment_section">
+      <CommentInput
+        value={comment?.value}
+        avatar={user?.avatar}
+        onInputChange={(e) =>
+          setComment((prev) => ({
+            ...prev,
+            value: e.target.value,
+          }))
+        }
+        onAddComment={() => onAddComment(comment.value, null)}
+        onCancel={()=>onCancel(initialComment)}
+      />
+
+      <hr />
+      {comments &&
+        comments.map((comment: comment) => (
+          <Comment commentData={comment} onAddComment={onAddComment}/>
+        ))}
+    </section>
+  );
+}
+
 function VideoDetailPage() {
-  const [like,setLike]=useState<boolean>(false);
-  const [dislike,setDislike]=useState<boolean>(false);
-  const {showSidebar}=useSelector((state:RootState)=>state.appState);
-  const toggleDislike=()=>{
-    setDislike((prev)=>!prev);
-    setLike(false);
-  }
-  const toggleLike=()=>{
-    setLike((prev)=>!prev);
-    setDislike(false);
-  }
+  const { videoID } = useParams();
+  const { showSidebar,user } = useSelector((state: RootState) => state.appState);
+  const { data, isFetching } = useGetVideoDetailsQuery(videoID);
+  const { data: recommendedVideos, isFetching: isRecommendedVidFetchig } =
+    useGetRecommendedVideosQuery(videoID);
+    const {data:reactions}=useGetVideoReactionsQuery(videoID);
+   const [toggleLikes] = useToggleLikesMutation();
+   const [toggleDislikes]=useToggleDislikesMutation();
+  const [updateWatchHistory] = useUpdateWatchHistoryMutation();
+  const {data:subscriptionData,isFetching:isSubsFetching}=useGetSubscriptionDetailsQuery(data?.owner?._id,{skip:!data});
+  const navigate=useNavigate();
+  useShowLoader(isRecommendedVidFetchig || isFetching || isSubsFetching);
+  const toggleDislike = async () => {
+   await toggleDislikes(videoID);
+  };
+  const toggleLike = async () => {
+     await toggleLikes(videoID);
+  };
+
+  useEffect(() => {
+    async function watchHistoryUpdate() {
+      await updateWatchHistory(videoID);
+    }
+    watchHistoryUpdate();
+  }, [videoID]);
 
   return (
     <>
       <NavBar />
-      <div className={`videoDetail container  ${showSidebar ? ' overlay ':''}`}>
+      <div
+        className={`videoDetail container  ${showSidebar ? " overlay " : ""}`}
+      >
         {/* Video Section */}
         <div>
           <div className="vidSection">
             <iframe
               width="100%"
               height="350px"
-              src="https://www.youtube.com/embed/pxfZU_-HRlU?si=OOU5PVG9zbZXARp_"
+              src={data?.videoFile}
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
@@ -56,62 +161,66 @@ function VideoDetailPage() {
             ></iframe>
             <section className="videoDetails">
               <div className="video_title_reactions">
-                <h4>Advanced React Patterns</h4>
+                <h4>{data?.title}</h4>
                 <div className="reactions">
                   <div className="likes">
-                    <span>{4980}</span>
-                    <AiTwotoneLike size="1.5rem" onClick={toggleLike} className={`reaction_icon ${like ? 'liked' : ''}`}/>
-                    </div>
+                    <span>{reactions?.totalLikes}</span>
+                    <AiTwotoneLike
+                      size="1.5rem"
+                      onClick={toggleLike}
+                      className={`reaction_icon ${reactions?.isLiked ? "liked" : ""}`}
+                    />
+                  </div>
 
-                 <div className="dislikes">
-                 <span>{280}</span>
-                 <AiTwotoneDislike size="1.5rem"  onClick={toggleDislike} className={`reaction_icon ${dislike ? 'disliked' : ''}`}/>
+                  <div className="dislikes">
+                    <span>{reactions?.totalDislikes}</span>
+                    <AiTwotoneDislike
+                      size="1.5rem"
+                      onClick={toggleDislike}
+                      className={`reaction_icon ${reactions?.isDisliked ? "disliked" : ""}`}
+                    />
                   </div>
                 </div>
               </div>
 
               <div className="flx">
-                <h6>30,184 Views </h6>
-                <h6>18 hours agao </h6>
+                <h6>{data?.views} Views </h6>
+                <h6>{formatPublishedDate(data?.createdAt)}</h6>
               </div>
               <section className="channel_detail_section">
                 <div>
                   <div>
-                    <img src="https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small/beautiful-latin-woman-avatar-character-icon-free-vector.jpg" />
+                    <img src={data?.owner?.avatar} onClick={()=>navigate(`/channel/${data?.owner?.username}`)}/>
                     <div className="channel_detail">
-                      <h5>React Patterns</h5>
-                      <h6>757K Subscribers</h6>
+                      <h5>{data?.owner?.username}</h5>
+                      <h6>{subscriptionData?.SubscribersCount} Subscribers</h6>
                     </div>
                   </div>
 
-                  <button className="blueBtn">Subscribe</button>
+                {data?.owner._id!==user.userId &&  <Subscription channelID={data?.owner?._id} isSubscribedTo={subscriptionData?.isSubscribedTo}/>}
                 </div>
                 <hr />
-                <p>
-                  🚀 Dive into the world of React with our latest tutorial
-                  series: "Advanced React Patterns"! 🛠️ Whether you're a
-                  seasoned developer or just starting out, this series is
-                  designed to elevate your React skills to the next level.
-                </p>
+                <p>{data?.description}</p>
               </section>
             </section>
 
-            <section className="comment_section">
-              <input type="text" placeholder=" Add comment" />
-              <hr />
-              {comments.map((comment) => (
-                <Comment commentData={comment} />
-              ))}
-            </section>
+            <CommentContainer videoId={videoID || ""} />
           </div>
 
           {/* Video recommendatations */}
           <section className="video_recommendations">
-            <VideoListItem />
-            <VideoListItem />
-            <VideoListItem />
-            <VideoListItem />
-            <VideoListItem />
+            {recommendedVideos?.data?.map((video: video) => (
+              <VideoListItem
+                thumbnail={video?.thumbnail}
+                title={video?.title}
+                owner={video?.owner}
+                views={video?.views}
+                createdAt={video?.createdAt}
+                key={video._id}
+                _id={video._id}
+                description={video.description}
+              />
+            ))}
           </section>
         </div>
         <SideBar />

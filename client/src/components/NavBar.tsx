@@ -5,41 +5,50 @@ import { ToggleSwitch } from "./ToggleSwitch";
 import useScroll from "../hooks/useGetScrollPosition";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
-import { setisAuthenticated, toggleSidebar } from "../redux/appState";
+import { setCurrentUser, toggleSidebar } from "../redux/appState";
 import { RxCross1 } from "react-icons/rx";
 import { RootState } from "../redux/store";
 import { Link, useNavigate } from "react-router-dom";
 import { gapi } from "gapi-script";
 import { getAuth, signOut } from "firebase/auth";
+import { useLogoutUserMutation } from "../redux/UserAPI";
+import { preventDefaultEvent } from "../utils/utils";
 
 const NavBar = () => {
   const { theme, toggleTheme } = useThemeContext();
   const { direction } = useScroll();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { showSidebar } = useSelector((state: RootState) => state.appState);
+  const { showSidebar,user } = useSelector((state: RootState) => state.appState);
   const toggleSidebarState = () => {
     dispatch(toggleSidebar());
   };
+const [logoutUser,{isSuccess,isError}]=useLogoutUserMutation();
+
+const logout=async (e:React.MouseEvent<HTMLButtonElement>)=>{
+  preventDefaultEvent(e);
+
+  await logoutUser(undefined);
+  navigate('/login',{replace:true});
+  console.log("moving",isSuccess,isError);
 
 
-const logout=()=>{
-//   // console.log("auth2",auth2);
-//   const auth2 = gapi?.auth2?.getAuthInstance();
-//   auth2.signOut().then(function () {
-//     console.log("User signed out.");
-//     navigate("/login", { replace: true })
-//   }).then(()=>{
-//     dispatch(setisAuthenticated({ isAuthenticated: false }));
-//   });
+  console.log("moving2",isSuccess,isError);
+  dispatch(setCurrentUser({ ...user,isAuthenticated: false }));
+
+
 const auth = getAuth();
 console.log("auth",auth);
-signOut(auth).then(() => {
-  console.log("signed out successfully");
-  dispatch(setisAuthenticated({ isAuthenticated: false }))
-}).catch((error) => {
-  console.error(error);
-});
+if(auth.currentUser?.emailVerified){
+  signOut(auth).then(() => {
+    console.log("signed out successfully");
+    // dispatch(setCurrentUser({ isAuthenticated: false }))
+  }).catch((error) => {
+    console.error(error);
+  });
+
+}
+
 
 }
   return (
@@ -82,7 +91,7 @@ signOut(auth).then(() => {
       </div>
       <div className="nav_logout_toggle">
         <button
-          className="blueBtn borderBlueBtn"
+          className="btn borderBlueBtn"
           onClick={logout}
         >
           Log Out

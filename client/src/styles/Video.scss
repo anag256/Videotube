@@ -1,5 +1,5 @@
 @import "mixin";
-
+@import "theme.scss";
 .video {
     cursor: pointer;
     transition: 0.5s ease-in;
@@ -10,7 +10,8 @@
         >img {
             width: 100%;
             border-radius: 1rem;
-
+            border: 2px solid var(--textColor);
+            filter: drop-shadow(4px 6px 6px var(--shadowColor));
             // max-width: 350px;
 
             @media (min-width:768px) {
@@ -39,6 +40,8 @@
             height: 2.5rem;
             width: 2.5rem;
             border-radius: 50%;
+            border: 2px solid var(--textColor);
+            filter: drop-shadow(4px 6px 6px var(--shadowColor));
         }
 
         h5 {
@@ -52,6 +55,13 @@
             font-size: 0.67rem;
             font-weight: bolder;
             letter-spacing: 1.6px;
+
+            .formatted-date {
+                &::before {
+                    content: "•";
+                    margin: 0 4px;
+                }
+            }
         }
 
         h6 {

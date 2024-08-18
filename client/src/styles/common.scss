@@ -1,6 +1,6 @@
-.blueBtn {
+
+.btn {
     padding: 0.6rem 1.2rem;
-    background: #2196F3;
     outline: none;
     border: none;
     border-radius: 0.5rem;
@@ -10,10 +10,59 @@
         font-size: 1rem;
     }
 }
+.flex{
+    @include flex();
+}
+.flexCol{
+    @include flex(column);
+}
+
+.bluebg{
+    background: #2196F3;
+    transition: 0.4s ease-in;
+}
+
+.bluebg:hover{
+    border: 1px solid #2196F3;
+    background-color: var(--bgColor);
+    color: #2196F3;
+}
+.bgRed{
+    background-color: #d32f2f;
+    color: #fff;
+}
+.bgRed:hover{
+    border:1px solid #d32f2f;
+    color: #d32f2f;
+}
+
+
 
 .borderBlueBtn{
     padding: 0.6rem 0.8rem;
     background-color: transparent;
     border:1px solid #2196F3;
     color: #2196F3;
+    transition: 0.4s ease-in;
+}
+.borderBlueBtn:hover{
+    background: #2196F3;
+    color: var(--bgColor);
+}
+.btn:disabled{
+    background-color: #999999;
+    pointer-events: none;
+    border-color: #999999;
+    color: var(--bgColor);
+}
+.common-input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    background-color: var(--bgColor);
+    outline: none;
+    color: var(--textColor);
+    border-bottom: 2px solid var(--textColor);
 }

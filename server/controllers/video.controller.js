@@ -64,6 +64,7 @@ const getRecommendationVideos = asyncHandler(async (req, res, next) => {
   const videos = await Video.find({
     _id: { $ne: currentVideoID },
   })
+    .populate({ path: "owner", select: MONGODB_EXCLUDE })
     .limit(10)
     .select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);
   if (!videos || videos.length === 0)
@@ -82,7 +83,7 @@ const getPaginatedVideos = asyncHandler(async (req, res, next) => {
       .status(400)
       .json(new ApiError(400, "Invalid page or limit value"));
   }
-  const videos = await Video.find()
+  const videos = await Video.find().populate({ path: "owner", select: MONGODB_EXCLUDE })
     .skip(skip)
     .limit(limit)
     .select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);
@@ -105,10 +106,134 @@ const getVideoDetails = asyncHandler(async (req, res, next) => {
     path: "owner",
     select: MONGODB_EXCLUDE,
   });
+  // const videoDetails = await Video.aggregate([
+  //   {
+  //     $match: {
+  //       _id: new mongoose.Types.ObjectId(videoID),
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "likes",
+  //       localField: "_id",
+  //       foreignField: "video",
+  //       as: "likedBy",
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "dislikes",
+  //       localField: "_id",
+  //       foreignField: "video",
+  //       as: "dislikedBy",
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "users",
+  //       localField: "owner",
+  //       foreignField: "_id",
+  //       as: "owner",
+  //       pipeline: [
+  //         {
+  //           $project: {
+  //             username: 1,
+  //             avatar: 1,
+  //             coverImage: 1,
+  //             fullName: 1,
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   },
+  //   {
+  //     $addFields: {
+  //       totalLikes: {
+  //         $size: "$likedBy",
+  //       },
+  //       totalDislikes: {
+  //         $size: "$dislikedBy",
+  //       },
+  //       owner: {
+  //         $first: "$owner",
+  //       },
+  //     },
+  //   },
+  // ]);
 
   return res
     .status(200)
     .json(new ApiResponse(200, video, "Video fetched successfully"));
+});
+
+const getVideoLikesDislikes = asyncHandler(async (req, res, next) => {
+  const { videoID } = req.params;
+  const videoReactions = await Video.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(videoID),
+      },
+    },
+    {
+      $lookup: {
+        from: "likes",
+        localField: "_id",
+        foreignField: "video",
+        as: "likedBy",
+      },
+    },
+    {
+      $lookup: {
+        from: "dislikes",
+        localField: "_id",
+        foreignField: "video",
+        as: "dislikedBy",
+      },
+    },
+    {
+      $addFields: {
+        totalLikes: {
+          $size: "$likedBy",
+        },
+        totalDislikes: {
+          $size: "$dislikedBy",
+        },
+        isLiked: {
+          $cond: {
+            if: {
+              $in: [
+                new mongoose.Types.ObjectId(req.user?._id),
+                "$likedBy.likedBy",
+              ],
+            },
+            then: true,
+            else: false,
+          },
+        },
+        isDisliked: {
+          $cond: {
+            if: {
+              $in: [
+                new mongoose.Types.ObjectId(req.user?._id),
+                "$dislikedBy.dislikedBy",
+              ],
+            },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+  ]);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        videoReactions[0],
+        "Video Reactions fetched successfully"
+      )
+    );
 });
 
 export {
@@ -119,4 +244,5 @@ export {
   getPaginatedVideos,
   incrementVideoViews,
   getVideoDetails,
+  getVideoLikesDislikes
 };

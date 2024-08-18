@@ -7,6 +7,7 @@ import { ApiError } from "../utils/ApiError.js";
 const subscribeChannel = asyncHandler(async (req, res, next) => {
     const subscribeTo = req.params.channel;
     const subscriber = req.user;
+    if(subscribeTo===subscriber) throw new ApiError(403,"User cannot subscribe to your own channel")
     const existingSubscription=await Subscription.findOne({
         subscriber:subscriber,
         channel:subscribeTo
@@ -22,6 +23,7 @@ const subscribeChannel = asyncHandler(async (req, res, next) => {
         new ApiResponse(200, subscription, "Channel Subscribed successfully")
       );
   });
+
 
   const unsubscribeChannel = asyncHandler(async (req, res, next) => {
     const channel = req.params.channel;

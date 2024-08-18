@@ -49,10 +49,16 @@
                         @include flex(row,center,space-between);
                         margin: 1.5rem 0;
                         >div{
+                            .channel_detail{
+                                h5{
+                                    margin-bottom: 0.5rem;
+                                }
+                            }
                             @include flex(row,center);
                             >img{
                                 @include square(3rem);
                                 border-radius: 50%;
+                                cursor: pointer;
                             }
                         }
 
@@ -92,10 +98,12 @@
             }
 
             .videoListItem{
+                cursor: pointer;
                 @include flex();
                 padding: 1rem;
-                border: 2px solid var(--textColor);
+                filter: drop-shadow(4px 6px 6px var(--shadowColor));
                 margin: 2rem 0;
+                border: 2px solid var(--textColor);
                 @media(min-width:768px){
                     &:first-child{
                         margin: 1rem 0;
@@ -106,8 +114,11 @@
                 >img{
                     width: 10rem;
                     height: 6.5rem;
+                    border: 1px solid var(--textColor);
+                    border-radius: 12px;
                 }
                 >div{
+                    flex:1;
                     >h4{
                         margin-bottom: 1.2rem;
                     }

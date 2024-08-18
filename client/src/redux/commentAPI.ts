@@ -8,12 +8,15 @@ const commentAPI = baseAPI.injectEndpoints({
           method: "POST",
           body: comment,
         }),
+        invalidatesTags:["comments"]
       }),
-      getComment: builder.query({
-        query: () => `/comment/`,
+      getComments: builder.query({
+        query: (videoID) => `/comment/${videoID}`,
+        transformResponse: (res: any) => res.data,
+        providesTags:["comments"]
       }),
   }),
   overrideExisting: false,
 })
 
-export const { useAddCommentMutation,useGetCommentQuery } = commentAPI
+export const { useAddCommentMutation,useGetCommentsQuery } = commentAPI

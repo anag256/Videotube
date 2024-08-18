@@ -1,13 +1,15 @@
 [data-theme="light"]{
-    --bgColor:#fff;
+    --bgColor:#F5F8FC;
     --textColor:#333;
     --headingColor:#444444;
     --mixBlendMode:multiply;
+    --shadowColor:#766e6eeb;
  }
 
  [data-theme="dark"]{
      --bgColor:#333;
-     --textColor:#fff;
-     --headingColor:#dddddd;
+     --textColor:#F5F8FC;
+     --headingColor:#F5F8FC;
      --mixBlendMode:overlay;
+     --shadowColor:black;
   }

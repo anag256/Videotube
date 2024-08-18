@@ -6,6 +6,9 @@
     >.channelDetails {
         width: 100%;
         height: 100vh;
+        .no-videos-error{
+            padding: 10rem;
+        }
         .bg_thumbnail {
             width: 100%;
             text-align: center;

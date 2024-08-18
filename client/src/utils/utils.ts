@@ -1,3 +1,20 @@
+import { Dispatch } from "@reduxjs/toolkit";
+import { EMAIL, PASSWORD, USERNAME } from "../constants/LoginFormConstants";
+import {
+  EMAIL_REGEX,
+  PASSWORD_REGEX,
+  USERNAME_REGEX,
+} from "../constants/Regex";
+import {
+  EMAIL_VALIDATION_ERROR,
+  PASSWORD_VALIDATION_ERROR,
+  USERNAME_VALIDATION_ERROR,
+} from "../constants/ValidationErrors";
+import { setToastData } from "../redux/appState";
+import { AppDispatch } from "../redux/store";
+
+export type field = "username" | "password" | "email";
+
 const throttle = (fn: Function, wait: number = 300) => {
   let inThrottle: boolean,
     lastFn: ReturnType<typeof setTimeout>,
@@ -21,6 +38,10 @@ const throttle = (fn: Function, wait: number = 300) => {
   };
 };
 
+const preventDefaultEvent = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
 function formatPublishedDate(publishedAt: string) {
   const currentDate = new Date();
   const publishedDate = new Date(publishedAt);
@@ -50,15 +71,73 @@ function formatPublishedDate(publishedAt: string) {
     //years
     const years = Math.round(yearsDiff);
     return `${years} years ago`;
-  } else if(daysDiff<30){
+  } else if (daysDiff < 30) {
     const days = Math.round(daysDiff);
     return `${days} days ago`;
-  }
-  else {
+  } else {
     //months
     const months = Math.round(monthsDiff);
     return `${months} months ago`;
   }
 }
 
-export { throttle, formatPublishedDate };
+function isFieldValid(value: string, regex: RegExp) {
+  return regex.test(value);
+}
+
+function validateField(field: field, value: string) {
+  switch (field) {
+    case USERNAME:
+      return isFieldValid(value, USERNAME_REGEX);
+    case PASSWORD:
+      return isFieldValid(value, PASSWORD_REGEX);
+    case EMAIL:
+      return isFieldValid(value, EMAIL_REGEX);
+    default:
+      return false;
+  }
+}
+
+const validationErrorMessages = {
+  username: USERNAME_VALIDATION_ERROR,
+  password: PASSWORD_VALIDATION_ERROR,
+  email: EMAIL_VALIDATION_ERROR,
+};
+
+function handleShowToast(dispatch:AppDispatch,result:any){
+  if (
+    "error" in result &&
+    "data" in result.error &&
+    "message" in result.error.data
+  ) {
+    dispatch(
+      setToastData({
+        toast: {
+          isVisible: true,
+          status: "error",
+          message: result?.error?.data?.message,
+        },
+      })
+    );
+  }
+
+  if ("data" in result) {
+    dispatch(
+      setToastData({
+        toast: {
+          isVisible: true,
+          status: "success",
+          message: result?.data.message,
+        },
+      })
+    );
+  }
+}
+export {
+  throttle,
+  formatPublishedDate,
+  validateField,
+  validationErrorMessages,
+  preventDefaultEvent,
+  handleShowToast
+};

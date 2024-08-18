@@ -1,0 +1,26 @@
+    @import "mixin";
+
+    .commentContainer {
+        @include flex();
+
+        >img {
+            @include square(2rem);
+            border-radius: 50%;
+        }
+
+        >div {
+            @include flex(column,flex-end);
+            flex: 1;
+            margin: 2rem 0;
+
+            >input {
+                flex: 1;
+                padding: 1rem;
+            }
+
+            button {
+                padding: 0.2rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+    }

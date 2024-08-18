@@ -1,62 +1,102 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SideBar from "../components/SideBar";
 import NavBar from "../components/NavBar";
 import "../styles/ChannelDetails.scss";
-import { videos } from "../data/videos";
 import Video, { video } from "../components/Video";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { useGetUserProfileQuery } from "../redux/UserAPI";
+import { useParams } from "react-router-dom";
+import { preventDefaultEvent } from "../utils/utils";
+import { useDispatch } from "react-redux";
+import {  toggleVideoUploadpopup } from "../redux/appState";
+import VideoUploadForm from "../modals/VideoUploadForm";
+import useShowLoader from "../hooks/useShowLoader";
+import { useGetChannelVideosQuery } from "../redux/VideoAPI";
+import Subscription from "../components/Subscription";
 
 function ChannelDetailPage() {
-  const {showSidebar}=useSelector((state:RootState)=>state.appState);
+  const { showSidebar, user } = useSelector(
+    (state: RootState) => state.appState
+  );
+  const dispatch = useDispatch();
+  const { username } = useParams();
+  const { data, isFetching, isError, error } = useGetUserProfileQuery(username);
+  console.log("data",data)
+  const { data: channelVideos, isFetching: isChannelVideosFetching,isError:isChannelVideosError,error:channelVideosError } =
+    useGetChannelVideosQuery(data?._id, {
+      skip: !data,
+    });
+
+  useShowLoader(isFetching || isChannelVideosFetching);
+  const onUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    preventDefaultEvent(e);
+    dispatch(toggleVideoUploadpopup());
+  };
+  useEffect(()=>{
+    console.log("iserror",isError,error)
+  },[isError,error])
+// console.log("iserror",isError,error)
+
   return (
     <>
       <NavBar />
-      <div className={`channelDetail container ${showSidebar ? ' overlay ':''}`}>
+      <div
+        className={`channelDetail container ${showSidebar ? " overlay " : ""}`}
+      >
         <div className="channelDetails">
           <div className="bg_thumbnail">
-            <img src="https://torange.biz/photofxnew/261/HD/digital-thumbnail-background-261969.jpg" loading="lazy"/>
+            <img src={data?.coverImage} loading="lazy" />
           </div>
           <div className="profile_details">
             <div className="profile_data">
-              <img
-                className="avatar"
-                src="https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
-              />
+              <img className="avatar" src={data?.avatar} />
               <div>
-                <h3>{"Gangsta Perspectives"}</h3>
-                <h5>{"@GangstaPerspectives"}</h5>
+                <h3>{data?.fullName}</h3>
+                <h5>{data?.username}</h5>
                 <h6>
-                  <span>{"226K Subscriber"}</span>
+                  <span>{`${data?.SubscribersCount} Subscribers`}</span>
                   <span>•</span>
-                  <span>{"220 Subscribed"}</span>
+                  <span>{`${data?.SubscribedToCount} Subscribed`}</span>
                 </h6>
               </div>
             </div>
             {/* conditional button */}
-            <button className="blueBtn">Subscribe</button>
+            {username === user.username ? (
+              <button className="btn bluebg" onClick={onUploadClick}>
+                Upload
+              </button>
+            ) : (
+              <Subscription channelID={data?._id} isSubscribedTo={data?.isSubscribedTo}/>
+            )}
           </div>
-
+          {
+            isChannelVideosError && <p className="no-videos-error">{channelVideosError.data.message}</p>
+          }
+          {!isChannelVideosError &&
           <div className="videos">
-            {videos.slice(0, 4).map((video: video) => {
+            {channelVideos?.data?.map((video: video) => {
               return (
                 <Video
-                  key={video.id}
+                  key={video._id}
                   title={video.title}
                   description={video.description}
-                  channel={video.channel}
-                  duration={video.duration}
-                  published_at={video.published_at}
-                  id={video.id}
+                  owner={data}
+                  views={video.views}
+                  // duration={video.duration}
+                  createdAt={video.createdAt}
+                  _id={video._id}
                   thumbnail={video.thumbnail}
-                  isChannelDetailsVideo
+                  // isChannelDetailsVideo
                 />
               );
             })}
           </div>
+}
         </div>
         <SideBar />
       </div>
+      <VideoUploadForm />
     </>
   );
 }

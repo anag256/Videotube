@@ -32,20 +32,7 @@
                 cursor: pointer;
             }
 
-            .passwordContainer {
-                position: relative;
 
-                >button {
-                    position: absolute;
-                    top: 50%;
-                    right: 2rem;
-                    transform: translate(-50%, -50%);
-                    cursor: pointer;
-                    outline: none;
-                    border: none;
-                    background-color: transparent;
-                }
-            }
 
             input {
                 width: 30rem;
@@ -54,6 +41,7 @@
                 border-radius: 1rem;
                 outline: none;
                 border: none;
+                border:1px solid var(--textColor);
             }
         }
 

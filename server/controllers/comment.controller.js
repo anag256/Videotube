@@ -25,9 +25,7 @@ const addComment = asyncHandler(async (req, res, next) => {
 
 const getComments = asyncHandler(async (req, res, next) => {
   const { videoID } = req.params;
-  const comments = await Comment.find({ video: videoID }).select(
-    MONGODB_EXCLUDE_CREATE_UPDATE_DATE
-  );
+  const comments = await Comment.find({ video: videoID,parentComment:null }).sort('-createdAt');
   return res
     .status(200)
     .json(new ApiResponse(200, comments, "Comments fetched successfully"));

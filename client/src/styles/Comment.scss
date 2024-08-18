@@ -18,10 +18,28 @@
         color: #065fd4;
         cursor: pointer;
         font-size: 0.7rem;
+        >span{
+            gap:0.4rem;
+        }
     }
     >p{
       padding: 1.5rem 0;
     }
+    .reply-container{
+        @include flex(row,center,flex-start);
+        gap: 5rem;
+        >span{
+            color: #065fd4;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
 
+    }
+    .reply{
+         img{
+            width: 2rem;
+            height: 2rem;
+         }
+    }
 
 }

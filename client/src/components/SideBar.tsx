@@ -8,47 +8,57 @@ import "../styles/SideBar.scss";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { useNavigate } from "react-router-dom";
 
 interface navItem {
   title: string;
+  linkTo:string;
   icon: ReactElement;
 }
-const navList: navItem[] = [
-  {
-    title: "Home",
-    icon: <FaHome />,
-  },
-  {
-    title: "Liked Videos",
-    icon: <AiOutlineLike />,
-  },
-  {
-    title: "History",
-    icon: <MdHistory />,
-  },
-  {
-    title: "My Content",
-    icon: <IoIosVideocam />,
-  },
-  {
-    title: "Subscribers",
-    icon: <IoIosPeople />,
-  },
-  {
-    title: "Settings",
-    icon: <IoSettings />,
-  },
-];
+
 
 const SideBar = () => {
-  const {showSidebar}=useSelector((state:RootState)=>state.appState);
-  console.log("sow",showSidebar)
+  const {showSidebar,user}=useSelector((state:RootState)=>state.appState);
+  const navigate=useNavigate();
+  const navList: navItem[] = [
+    {
+      title: "Home",
+      linkTo:'/',
+      icon: <FaHome />,
+    },
+    {
+      title: "Liked Videos",
+      linkTo:'/',
+      icon: <AiOutlineLike />,
+    },
+    {
+      title: "History",
+      linkTo:'/',
+      icon: <MdHistory />,
+    },
+    {
+      title: "My Content",
+      linkTo:`/channel/${user.username}`,
+      icon: <IoIosVideocam />,
+    },
+    {
+      title: "Subscribers",
+      linkTo:'/',
+      icon: <IoIosPeople />,
+    },
+    {
+      title: "Settings",
+      linkTo:'/',
+      icon: <IoSettings />,
+    },
+  ];
+
   return (
     <aside className="sidelist" style={{opacity:showSidebar? 0.967:0,transform:showSidebar?'translateX(0)':'translateX(-1000px)'}}>
       <ul>
         {navList.map((navItem: navItem, index: number) => {
           return (
-            <li key={index}>
+            <li key={index} onClick={()=>navigate(navItem.linkTo)}>
               <span className="icon">{navItem.icon}</span>
               <span className="text">{navItem.title}</span>
             </li>

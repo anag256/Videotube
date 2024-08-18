@@ -6,12 +6,13 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { incrementVideoViews } from "./video.controller.js";
 import mongoose from "mongoose";
-import { MONGODB_EXCLUDE } from "../constants/selectExlusion.js";
 import {
   DEFAULT_COVER_IMAGE,
   JWT_TOKEN_OPTIONS,
 } from "../constants/userConstants.js";
-
+import path from "path";
+import { MONGODB_EXCLUDE } from "../constants/selectExlusion.js";
+import fs from "fs";
 const generateAccessAndRefreshTokens = async (user) => {
   try {
     const accessToken = user.generateAccessToken();
@@ -44,17 +45,30 @@ const registerUser = asyncHandler(async (req, res, next) => {
 
   if (existingUser) throw new ApiError(409, "User already exists");
 
-  const avatarLocalPath = req.files?.avatar[0].path;
+  let isFilesEmpty = Object.keys(req?.files).length === 0;
+  console.log("files", path.resolve() + "/files/defaults/man.png");
+
+  if (isFilesEmpty) {
+    fs.copyFileSync("./files/defaults/man.png", "./files/images/man.png");
+    fs.copyFileSync("./files/defaults/bg.jpeg", "./files/images/bg.jpeg");
+  }
+
+  const avatarLocalPath = !isFilesEmpty
+    ? req.files?.avatar[0]?.path
+    : "./files/images/man.png";
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required");
   }
 
-  const coverImageLocalPath = req.files?.coverImage[0].path;
+  const coverImageLocalPath = !isFilesEmpty
+    ? req.files?.coverImage[0]?.path
+    : "./files/images/bg.jpeg";
 
   if (!coverImageLocalPath) {
     throw new ApiError(400, "CoverImage is required");
   }
+
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
   if (!avatar || !coverImage)
@@ -333,7 +347,7 @@ const getUserChannelProfile = asyncHandler(async (req, res, next) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, userProfile, "User Profile fetched successfully")
+      new ApiResponse(200, userProfile[0], "User Profile fetched successfully")
     );
 });
 
@@ -398,49 +412,111 @@ const getUserWatchHistory = asyncHandler(async (req, res, next) => {
 });
 
 const googleSignIn = asyncHandler(async (req, res, next) => {
-  const { email, displayName, emailVerified,photoURL } = req.body;
+  const { email, displayName, emailVerified, photoURL } = req.body;
   if (!emailVerified)
     throw new ApiError(400, "Email not verified via google sign in");
-  const user = await User.findOne({ email });
-  if (user) {
-    const { accessToken, refreshToken } =
-      await generateAccessAndRefreshTokens(user);
-
-    console.log("accessToken", accessToken);
-    const loggedInUser = await User.findById(user._id).select(MONGODB_EXCLUDE);
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, JWT_TOKEN_OPTIONS)
-      .cookie("refreshToken", refreshToken, JWT_TOKEN_OPTIONS)
-      .json(
-        new ApiResponse(
-          200,
-          {
-            user: loggedInUser,
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-          },
-          "Logged in successfully"
-        )
-      );
+  let user = await User.findOne({ email });
+  if (!user) {
+    const generatedUsername = displayName.toLowerCase().replace(/\s+/g, "");
+    const generatedPassword = Math.random().toString(36).slice(-8);
+    user = await User.create({
+      username: generatedUsername,
+      password: generatedPassword,
+      email,
+      fullName: displayName,
+      avatar: photoURL,
+      coverImage: DEFAULT_COVER_IMAGE,
+      refreshToken: "",
+      watchHistory: [],
+    });
   }
-  const generatedUsername = displayName.toLowerCase().replace(/\s+/g, "");
-  const generatedPassword = Math.random().toString(36).slice(-8);
-  const newUser = await User.create({
-    username: generatedUsername,
-    password: generatedPassword,
-    email,
-    fullName: displayName,
-    avatar: photoURL,
-    coverImage: DEFAULT_COVER_IMAGE,
-    refreshToken: "",
-    watchHistory: [],
-  });
-  const createdUser = await User.findById(newUser._id).select(MONGODB_EXCLUDE);
+
+  const { accessToken, refreshToken } =
+    await generateAccessAndRefreshTokens(user);
+
+  console.log("accessToken", accessToken);
+  console.log("refreshTokenToken", refreshToken);
+  const loggedInUser = await User.findById(user._id).select(MONGODB_EXCLUDE);
   return res
-    .status(201)
-    .json(new ApiResponse(201, createdUser, "User created successfully"));
+    .status(200)
+    .cookie("accessToken", accessToken, JWT_TOKEN_OPTIONS)
+    .cookie("refreshToken", refreshToken, JWT_TOKEN_OPTIONS)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        },
+        "Logged in successfully"
+      )
+    );
 });
+
+const getSubscribersAndSubscriptions=asyncHandler(async(req,res,next)=>{
+  const {id}=req.params;
+  console.log("id here",id)
+  const subscriptionDetails=await User.aggregate([
+    {
+    $lookup: {
+      from: 'subscriptions',
+      localField: '_id',
+      foreignField: 'channel',
+      as: 'subscribers',
+
+    },
+
+
+  },{
+    $lookup: {
+      from: 'subscriptions',
+      localField: '_id',
+      foreignField: 'subscriber',
+      as: 'subscribedTo',
+
+    },
+
+
+  },
+  {
+    $match: {
+      _id:new mongoose.Types.ObjectId(id)
+    },
+  },
+  {
+    $project:{
+      subscribers:1,
+      subscribedTo:1,
+
+    }
+},
+  {
+    $addFields: {
+      SubscribersCount: {
+        $size: "$subscribers",
+      },
+      SubscribedToCount: {
+        $size: "$subscribedTo",
+      },
+      isSubscribedTo: {
+        $cond: {
+          if: {
+            $in: [
+              new mongoose.Types.ObjectId(req.user?._id),
+              "$subscribers.subscriber",
+            ],
+          },
+          then: true,
+          else: false,
+        },
+      },
+    },
+  },
+
+ ]);
+  return  res.status(200).json(new ApiResponse(200,subscriptionDetails[0],"subscription details fetched successfully"))
+})
 
 export {
   registerUser,
@@ -456,4 +532,5 @@ export {
   getUserWatchHistory,
   getUserChannelProfile,
   googleSignIn,
+  getSubscribersAndSubscriptions
 };

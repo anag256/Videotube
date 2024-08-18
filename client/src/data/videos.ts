@@ -4,28 +4,30 @@ export const videos:video[]=
  [
       {
         "title": "Dog's Funniest Home Videos",
-        "id": "1",
+        "_id": "66ae3f7d2d5a4f26a17871d0",
         "thumbnail": "https://templates.simplified.co/thumb/b1be416d-4eea-49f7-88f9-e57fbfc25481.jpg",
         "description": "The funniest moments of dogs caught on camera!",
-        "published_at": "2024-03-08T10:00:00Z",
+        "createdAt": "2024-03-08T10:00:00Z",
         "duration": "10:30",
-        "channel": {
-          "name": "Animal Lovers Channel",
-          "id": "channel_id_1",
-          "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small/beautiful-latin-woman-avatar-character-icon-free-vector.jpg"
+        "owner": {
+          "username":"anag124",
+          "name": "Animal Lovers owner",
+          "_id": "66a656f6e1507cd3ed8152a7",
+          "avatar": "https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small/beautiful-latin-woman-avatar-character-icon-free-vector.jpg"
         }
       },
       {
         "title": "Cooking Masterclass: Perfect Pasta",
-        "id": "2",
+        "_id": "66bf342ed9137c73b243e043",
         "thumbnail": "https://www.dochipo.com/wp-content/uploads/2022/08/YouTube-Thumbnail-_-Food-8-scaled.jpg",
         "description": "Learn how to make the perfect pasta from scratch!",
-        "published_at": "2024-03-07T12:00:00Z",
+        "createdAt": "2024-03-07T12:00:00Z",
         "duration": "05:45",
-        "channel": {
+        "owner": {
+          "username":"johndoe",
           "name": "Chef's Kitchen",
-          "id": "channel_id_2",
-          "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small/beautiful-latin-woman-avatar-character-icon-free-vector.jpg"
+          "_id": "66be22ac936042535d463f66",
+          "avatar": "https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small/beautiful-latin-woman-avatar-character-icon-free-vector.jpg"
         }
       },
       {
@@ -35,9 +37,10 @@ export const videos:video[]=
         "description": "Learn how to grow delicious tomatoes in your backyard!",
         "published_at": "2024-03-06T14:30:00Z",
         "duration": "08:20",
-        "channel": {
+        "owner": {
+          "username":"rakshit254",
           "name": "Green Thumb Gardening",
-          "id": "channel_id_3",
+          "id": "66af39a04c40a3b23a6fe17a",
           "thumbnail": "https://templates.simplified.co/usetldr/1022255/thumb/5a108056-a070-44ee-a123-1afd489077e0.jpg"
         }
       },
@@ -48,9 +51,10 @@ export const videos:video[]=
         "description": "Burn calories and get fit with this intense full-body workout!",
         "published_at": "2024-03-05T09:15:00Z",
         "duration": "20:00",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "Fit Life",
-          "id": "channel_id_4",
+          "id": "owner_id_4",
           "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSO5lUphapZxFtnNTmnKq1bxsgYNjT8xxivL0vw2efBwhaL9MQ2SK3BfXYaz0oC_kTQWo&usqp=CAU"
         }
       },
@@ -61,9 +65,10 @@ export const videos:video[]=
         "description": "Spruce up your home with these creative DIY decoration ideas!",
         "published_at": "2024-03-04T17:45:00Z",
         "duration": "12:10",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "DIY Enthusiast",
-          "id": "channel_id_5",
+          "id": "owner_id_5",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small/beautiful-latin-woman-avatar-character-icon-free-vector.jpg"
         }
       },
@@ -74,9 +79,10 @@ export const videos:video[]=
         "description": "Join us on our adventure through the romantic city of Paris!",
         "published_at": "2024-03-03T08:30:00Z",
         "duration": "18:50",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "Wanderlust Adventures",
-          "id": "channel_id_6",
+          "id": "owner_id_6",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small/beautiful-latin-woman-avatar-character-icon-free-vector.jpg"
         }
       },
@@ -87,9 +93,10 @@ export const videos:video[]=
         "description": "Check out our review of the newest smartphones on the market!",
         "published_at": "2024-03-02T11:20:00Z",
         "duration": "15:35",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "Tech Explorers",
-          "id": "channel_id_7",
+          "id": "owner_id_7",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small/beautiful-latin-woman-avatar-character-icon-free-vector.jpg"
         }
       },
@@ -100,9 +107,10 @@ export const videos:video[]=
         "description": "Enjoy the electrifying live performance from our latest music concert!",
         "published_at": "2024-03-01T13:00:00Z",
         "duration": "30:00",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "Music Mania",
-          "id": "channel_id_8",
+          "id": "owner_id_8",
           "thumbnail": "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png"
         }
       },
@@ -113,9 +121,10 @@ export const videos:video[]=
         "description": "Get ready to laugh out loud with this hilarious compilation!",
         "published_at": "2024-02-29T16:20:00Z",
         "duration": "07:45",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "Comedy Central",
-          "id": "channel_id_9",
+          "id": "owner_id_9",
           "thumbnail": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngegg.com%2Fen%2Fsearch%3Fq%3Davatar&psig=AOvVaw1YwpdS8DLLqG_LGtLdJpGy&ust=1710013260218000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCJDd_fm15YQDFQAAAAAdAAAAABAE"
         }
       },
@@ -126,9 +135,10 @@ export const videos:video[]=
         "description": "Explore the wonders of the universe in this fascinating documentary!",
         "published_at": "2024-02-28T09:45:00Z",
         "duration": "25:20",
-        "channel": {
-          "name": "Science Channel",
-          "id": "channel_id_10",
+        "owner": {
+          "username":"anag124",
+          "name": "Science owner",
+          "id": "owner_id_10",
           "thumbnail": "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png"
         }
       },
@@ -139,9 +149,10 @@ export const videos:video[]=
         "description": "Discover the hottest fashion trends from our latest fashion show!",
         "published_at": "2024-02-27T14:10:00Z",
         "duration": "18:15",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "Fashion Forward",
-          "id": "channel_id_11",
+          "id": "owner_id_11",
           "thumbnail": "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png"
         }
       },
@@ -152,9 +163,10 @@ export const videos:video[]=
         "description": "Learn advanced painting techniques from this comprehensive art tutorial!",
         "published_at": "2024-02-26T16:50:00Z",
         "duration": "14:30",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "Artistic Creations",
-          "id": "channel_id_12",
+          "id": "owner_id_12",
           "thumbnail": "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png"
         }
       },
@@ -165,9 +177,10 @@ export const videos:video[]=
         "description": "Embark on an exciting backpacking adventure with us across scenic destinations!",
         "published_at": "2024-02-25T11:25:00Z",
         "duration": "22:40",
-        "channel": {
+        "owner": {
+          "username":"anag124",
           "name": "Wanderlust Explorers",
-          "id": "channel_id_13",
+          "id": "owner_id_13",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
         }
       },
@@ -178,9 +191,9 @@ export const videos:video[]=
         "description": "Stay updated with the latest technology news and developments!",
         "published_at": "2024-02-24T09:30:00Z",
         "duration": "11:55",
-        "channel": {
+        "owner": {
           "name": "Tech Update",
-          "id": "channel_id_14",
+          "id": "owner_id_14",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
         }
       },
@@ -191,9 +204,9 @@ export const videos:video[]=
         "description": "Find out which blockbuster hits are worth watching in our latest movie review!",
         "published_at": "2024-02-23T13:20:00Z",
         "duration": "09:45",
-        "channel": {
+        "owner": {
           "name": "Movie Maniacs",
-          "id": "channel_id_15",
+          "id": "owner_id_15",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
         }
       },
@@ -204,9 +217,9 @@ export const videos:video[]=
         "description": "Discover delicious and nutritious recipes for a healthy lifestyle!",
         "published_at": "2024-02-22T17:10:00Z",
         "duration": "13:25",
-        "channel": {
+        "owner": {
           "name": "Healthy Living",
-          "id": "channel_id_16",
+          "id": "owner_id_16",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
         }
       },
@@ -217,9 +230,9 @@ export const videos:video[]=
         "description": "Get inspired by our stunning spring collection in this fashion lookbook!",
         "published_at": "2024-02-21T11:40:00Z",
         "duration": "16:50",
-        "channel": {
+        "owner": {
           "name": "Fashionista",
-          "id": "channel_id_17",
+          "id": "owner_id_17",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
         }
       },
@@ -230,9 +243,9 @@ export const videos:video[]=
         "description": "Explore the mesmerizing beauty of the underwater world in this documentary!",
         "published_at": "2024-02-20T15:15:00Z",
         "duration": "28:30",
-        "channel": {
+        "owner": {
           "name": "Nature Explorers",
-          "id": "channel_id_18",
+          "id": "owner_id_18",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
         }
       },
@@ -243,9 +256,9 @@ export const videos:video[]=
         "description": "Learn the basics of coding with our easy-to-follow tech tutorial!",
         "published_at": "2024-02-19T09:55:00Z",
         "duration": "11:20",
-        "channel": {
+        "owner": {
           "name": "Code Masters",
-          "id": "channel_id_19",
+          "id": "owner_id_19",
           "thumbnail": "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
         }
       },
@@ -256,9 +269,9 @@ export const videos:video[]=
         "description": "Discover the hidden gems of Italy with our ultimate travel guide!",
         "published_at": "2024-02-18T12:30:00Z",
         "duration": "21:40",
-        "channel": {
+        "owner": {
           "name": "Travel Enthusiasts",
-          "id": "channel_id_20",
+          "id": "owner_id_20",
           "thumbnail": "https://st3.depositphotos.com/3431221/13621/v/450/depositphotos_136216036-stock-illustration-man-avatar-icon-hipster-character.jpg"
         }
       },
@@ -269,9 +282,9 @@ export const videos:video[]=
         "description": "Sit back and enjoy the soothing tunes from our acoustic music session!",
         "published_at": "2024-02-17T14:20:00Z",
         "duration": "19:15",
-        "channel": {
+        "owner": {
           "name": "Acoustic Vibes",
-          "id": "channel_id_21",
+          "id": "owner_id_21",
           "thumbnail": "https://st3.depositphotos.com/3431221/13621/v/450/depositphotos_136216036-stock-illustration-man-avatar-icon-hipster-character.jpg"
         }
       },
@@ -282,9 +295,9 @@ export const videos:video[]=
         "description": "Perform exciting chemistry experiments and learn something new!",
         "published_at": "2024-02-16T10:45:00Z",
         "duration": "14:50",
-        "channel": {
+        "owner": {
           "name": "Science Lab",
-          "id": "channel_id_22",
+          "id": "owner_id_22",
           "thumbnail": "https://st3.depositphotos.com/3431221/13621/v/450/depositphotos_136216036-stock-illustration-man-avatar-icon-hipster-character.jpg"
         }
       },
@@ -295,9 +308,9 @@ export const videos:video[]=
         "description": "Experience the creativity of modern art in our exclusive exhibition showcase!",
         "published_at": "2024-02-15T12:55:00Z",
         "duration": "17:30",
-        "channel": {
+        "owner": {
           "name": "Art Gallery",
-          "id": "channel_id_23",
+          "id": "owner_id_23",
           "thumbnail": "https://st3.depositphotos.com/3431221/13621/v/450/depositphotos_136216036-stock-illustration-man-avatar-icon-hipster-character.jpg"
         }
       },
@@ -308,9 +321,9 @@ export const videos:video[]=
         "description": "Watch as chefs compete in a culinary battle with mystery ingredients!",
         "published_at": "2024-02-14T14:40:00Z",
         "duration": "24:10",
-        "channel": {
+        "owner": {
           "name": "Culinary Clash",
-          "id": "channel_id_24",
+          "id": "owner_id_24",
           "thumbnail": "https://st3.depositphotos.com/3431221/13621/v/450/depositphotos_136216036-stock-illustration-man-avatar-icon-hipster-character.jpg"
         }
       },
@@ -321,9 +334,9 @@ export const videos:video[]=
         "description": "Experience the beauty and tranquility of an island paradise through our travel diary!",
         "published_at": "2024-02-13T16:25:00Z",
         "duration": "28:20",
-        "channel": {
+        "owner": {
           "name": "Island Escapes",
-          "id": "channel_id_25",
+          "id": "owner_id_25",
           "thumbnail": "https://st3.depositphotos.com/3431221/13621/v/450/depositphotos_136216036-stock-illustration-man-avatar-icon-hipster-character.jpg"
         }
       }
