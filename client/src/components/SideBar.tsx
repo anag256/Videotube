@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { FaHome } from "react-icons/fa";
 import { IoIosPeople, IoIosVideocam } from "react-icons/io";
@@ -8,57 +8,136 @@ import "../styles/SideBar.scss";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  LIKED_VIDEOS,
+  SUBCRIPTION_DETAILS,
+  WATCH_HISTORY,
+} from "../constants/Actions";
+import { popoverPath } from "../utils/utils";
+import {
+  HOME_PAGE_URL_REGEX,
+  LIKED_VIDEOS_POPOVER_PAGE_REGEX,
+  MY_CONTENT_PAGE_URL_REGEX,
+  SUBCRIPTION_DETAILS_POPOVER_PAGE_REGEX,
+  WATCH_HISTORY_POPOVER_PAGE_REGEX,
+} from "../constants/Regex";
+
+interface PopoverPathResult {
+  pathname: string;
+  search: string;
+}
 
 interface navItem {
+  id: number;
   title: string;
-  linkTo:string;
+  linkTo: string | PopoverPathResult;
   icon: ReactElement;
 }
 
-
+const mapIndexToListItem = {
+  Home: 1,
+  Liked_Videos: 2,
+  History: 3,
+  My_Content: 4,
+  Subscribers: 5,
+  Settings: 6,
+};
 const SideBar = () => {
-  const {showSidebar,user}=useSelector((state:RootState)=>state.appState);
-  const navigate=useNavigate();
-  const navList: navItem[] = [
-    {
-      title: "Home",
-      linkTo:'/',
-      icon: <FaHome />,
-    },
-    {
-      title: "Liked Videos",
-      linkTo:'/',
-      icon: <AiOutlineLike />,
-    },
-    {
-      title: "History",
-      linkTo:'/',
-      icon: <MdHistory />,
-    },
-    {
-      title: "My Content",
-      linkTo:`/channel/${user.username}`,
-      icon: <IoIosVideocam />,
-    },
-    {
-      title: "Subscribers",
-      linkTo:'/',
-      icon: <IoIosPeople />,
-    },
-    {
-      title: "Settings",
-      linkTo:'/',
-      icon: <IoSettings />,
-    },
-  ];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { showSidebar, user } = useSelector(
+    (state: RootState) => state.appState
+  );
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  const navList: navItem[] = useMemo(
+    () => [
+      {
+        id: 1,
+        title: "Home",
+        key: "home",
+        linkTo: "/",
+        icon: <FaHome />,
+      },
+      {
+        id: 2,
+        title: "Liked Videos",
+        key: "liked_videos",
+        linkTo: popoverPath(LIKED_VIDEOS),
+        icon: <AiOutlineLike />,
+      },
+      {
+        id: 3,
+        title: "History",
+        linkTo: popoverPath(WATCH_HISTORY),
+        icon: <MdHistory />,
+      },
+      {
+        id: 4,
+        title: "My Content",
+        linkTo: `/channel/${user.username}`,
+        icon: <IoIosVideocam />,
+      },
+      {
+        id: 5,
+        title: "Subscribers",
+        linkTo: popoverPath(SUBCRIPTION_DETAILS),
+        icon: <IoIosPeople />,
+      },
+      {
+        id: 6,
+        title: "Settings",
+        linkTo: `/channel/${user.username}`,
+        icon: <IoSettings />,
+      },
+    ],
+    [user]
+  );
+
+  const onClickListItem = (navItem: navItem) => {
+    setActiveIndex(navItem.id);
+    navigate(navItem.linkTo);
+  };
+
+  const switchListItems = () => {
+    const loc = location.pathname.concat(location.search);
+    switch (loc) {
+      case loc.match(HOME_PAGE_URL_REGEX)?.input:
+        return 1;
+      case loc.match(LIKED_VIDEOS_POPOVER_PAGE_REGEX)?.input:
+        return 2;
+      case loc.match(WATCH_HISTORY_POPOVER_PAGE_REGEX)?.input:
+        return 3;
+      case loc.match(SUBCRIPTION_DETAILS_POPOVER_PAGE_REGEX)?.input:
+        return 5;
+      case loc.match(MY_CONTENT_PAGE_URL_REGEX)?.input:
+        return 4;
+      default:
+        return 1;
+    }
+  };
+
+  useEffect(() => {
+    setActiveIndex(switchListItems());
+  }, [location]);
   return (
-    <aside className="sidelist" style={{opacity:showSidebar? 0.967:0,transform:showSidebar?'translateX(0)':'translateX(-1000px)'}}>
+    <aside
+      className="sidelist"
+      style={{
+        opacity: showSidebar ? 0.967 : 0,
+        transform: showSidebar ? "translateX(0)" : "translateX(-1000px)",
+      }}
+    >
       <ul>
-        {navList.map((navItem: navItem, index: number) => {
+        {navList.map((navItem: navItem) => {
+          console.log("activeIndex", activeIndex, navItem.id);
           return (
-            <li key={index} onClick={()=>navigate(navItem.linkTo)}>
+            <li
+              key={navItem.id}
+              onClick={() => onClickListItem(navItem)}
+              className={`${activeIndex === navItem.id ? "active" : ""}`}
+            >
               <span className="icon">{navItem.icon}</span>
               <span className="text">{navItem.title}</span>
             </li>

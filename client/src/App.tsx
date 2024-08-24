@@ -1,5 +1,11 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -8,19 +14,27 @@ const VideoDetailPage = lazy(() => import("./pages/VideoDetailPage"));
 import "./styles/App.scss";
 import "./styles/Container.scss";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useGetCurrentUserQuery } from "./redux/UserAPI";
+import {
+  useGetCurrentUserQuery,
+  useRefreshAccessTokenMutation,
+} from "./redux/UserAPI";
 import { useDispatch } from "react-redux";
 import { setCurrentUser } from "./redux/appState";
 import Toast from "./components/Toast";
 import Loader from "./components/Loader";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
+import PopoverPage from "./pages/PopoverPage";
+import LikedVideosPopover from "./modals/LikedVideosPopover";
+import WatchHistoryPopover from "./modals/watchHistoryPopover";
+import SubscriptionPopover from "./modals/SubscriptionPopover";
 
 function App() {
   const { data, isFetching, isError, error } =
     useGetCurrentUserQuery(undefined);
-    const location = useLocation();
-    console.log('location',location)
+  const [refreshAccessToken] = useRefreshAccessTokenMutation();
+  const location = useLocation();
+  console.log("location", location);
   const { user, toast } = useSelector((state: RootState) => state.appState);
   const { isAuthenticated } = user;
   const dispatch = useDispatch();
@@ -33,16 +47,30 @@ function App() {
         setCurrentUser({
           userId: data?._id,
           username: data?.username,
-          avatar:data?.avatar,
+          avatar: data?.avatar,
           isAuthenticated: true,
         })
       );
       return;
     }
     dispatch(
-      setCurrentUser({ user: "", username: "", avatar:"",isAuthenticated: false })
+      setCurrentUser({
+        user: "",
+        username: "",
+        avatar: "",
+        isAuthenticated: false,
+      })
     );
   }, [data, isFetching]);
+
+  useEffect(() => {
+   async function refreshToken(){
+    if (isError && error?.data.message === "Access Token Expired") {
+      await refreshAccessToken(undefined);
+    }
+   }
+   refreshToken();
+  }, [isError, error]);
 
   useEffect(() => {
     if (isAuthenticated) navigate(location.state.from);
@@ -75,6 +103,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ChannelDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/:path"
+            element={
+              <ProtectedRoute>
+                <PopoverPage />
               </ProtectedRoute>
             }
           />

@@ -54,7 +54,37 @@ button {
     z-index: 20;
     position: relative;
 
-    input,textarea {
+    .ReactModal__Overlay {
+        opacity: 0;
+        transform: translateY(3000px);
+        transition: all 0.9s ease-in-out;
+
+    }
+
+    .ReactModal__Content {
+        filter: drop-shadow(10px 10px 40px var(--textColor));
+        color: #fff;
+        .vidsPopover {
+            width: 20rem;
+            .video{
+                margin-bottom: 2rem;
+            }
+        }
+    }
+
+    .ReactModal__Overlay--after-open {
+        opacity: 1;
+        transform: translateY(0px);
+        background-color: rgba(255, 255, 255, 0.45);
+    }
+
+    .ReactModal__Overlay--before-close {
+        opacity: 0;
+        transform: translateY(3000px);
+    }
+
+    input,
+    textarea {
         width: 25rem;
         padding: 1.1rem;
         margin: 0.8rem;
@@ -69,6 +99,7 @@ button {
         width: 25rem;
         background-color: #fff;
         color: #333;
+
         input[type="file"] {
 
             width: 25rem;
@@ -114,10 +145,13 @@ body {
 
     margin: 2rem;
 
+    &.ReactModal__Body--open {
+        overflow: hidden;
+    }
 
 
     .container {
-        width: 90%;
+        // width: 90%;
         margin: 1rem auto;
 
         &.overlay {

@@ -36,7 +36,7 @@ const VideoAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: {videoId:videoID},
       }),
-      invalidatesTags: ["videoReactions"],
+      invalidatesTags: ["videoReactions","likedVideos"],
     }),
     toggleDislikes: builder.mutation({
       query: (videoID) => ({
@@ -44,7 +44,7 @@ const VideoAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: { videoId: videoID },
       }),
-      invalidatesTags: ["videoReactions"],
+      invalidatesTags: ["videoReactions","likedVideos"],
     }),
     uploadVideo: builder.mutation({
       query: ({ title, description, isPublished, videoPath, thumbnail }) => {

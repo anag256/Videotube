@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import NavBar from "../components/NavBar";
-import SideBar from "../components/SideBar";
 import "../styles/VideoDetailPage.scss";
 import Comment, { comment } from "../components/Comment";
 import { AiTwotoneLike, AiTwotoneDislike } from "react-icons/ai";
@@ -16,16 +14,15 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import useShowLoader from "../hooks/useShowLoader";
 import { video } from "../components/Video";
-import { formatPublishedDate, handleShowToast } from "../utils/utils";
+import { formatPublishedDate } from "../utils/utils";
 import CommentInput from "../components/CommentInput";
 import {
   useAddCommentMutation,
   useGetCommentsQuery,
 } from "../redux/commentAPI";
-import { useGetSubscriptionDetailsQuery, useSubscribeMutation, useUpdateWatchHistoryMutation } from "../redux/UserAPI";
-import { skip } from "node:test";
-import { SUBSCRIBE, UNSUBSCRIBE } from "../constants/Actions";
+import { useGetSubscriptionDetailsQuery, useUpdateWatchHistoryMutation } from "../redux/UserAPI";
 import Subscription from "../components/Subscription";
+import withNavSideBar from "../hoc/withNavSideBar";
 
 export interface commentInput{
   value:string;
@@ -115,7 +112,7 @@ function CommentContainer({ videoId }: commentContainerProps) {
 
 function VideoDetailPage() {
   const { videoID } = useParams();
-  const { showSidebar,user } = useSelector((state: RootState) => state.appState);
+  const { user } = useSelector((state: RootState) => state.appState);
   const { data, isFetching } = useGetVideoDetailsQuery(videoID);
   const { data: recommendedVideos, isFetching: isRecommendedVidFetchig } =
     useGetRecommendedVideosQuery(videoID);
@@ -142,11 +139,6 @@ function VideoDetailPage() {
 
   return (
     <>
-      <NavBar />
-      <div
-        className={`videoDetail container  ${showSidebar ? " overlay " : ""}`}
-      >
-        {/* Video Section */}
         <div>
           <div className="vidSection">
             <iframe
@@ -223,10 +215,8 @@ function VideoDetailPage() {
             ))}
           </section>
         </div>
-        <SideBar />
-      </div>
     </>
   );
 }
 
-export default VideoDetailPage;
+export default withNavSideBar(VideoDetailPage,{className:'videoDetail'});

@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const appSlice = createSlice({
   name: "appState",
   initialState: {
-    showSidebar: false,
+    showSidebar: true,
     user: {
       userId: "",
       username:"",
@@ -16,7 +16,6 @@ const appSlice = createSlice({
       status: "",
       message: "",
     },
-    showVideoUploadPopup:false
   },
   reducers: {
     toggleSidebar(state) {
@@ -31,9 +30,6 @@ const appSlice = createSlice({
     setShowLoader(state, action) {
       state.showLoader = action.payload.showLoader;
     },
-    toggleVideoUploadpopup(state) {
-      state.showVideoUploadPopup = !state.showVideoUploadPopup;
-    },
   },
 });
 
@@ -41,7 +37,6 @@ export const {
   toggleSidebar,
   setCurrentUser,
   setToastData,
-  setShowLoader,
-  toggleVideoUploadpopup
+  setShowLoader
 } = appSlice.actions;
 export default appSlice.reducer;

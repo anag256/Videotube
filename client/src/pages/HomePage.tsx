@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
-import NavBar from "../components/NavBar";
-import SideBar from "../components/SideBar";
 import Video, { video } from "../components/Video";
 import "../styles/HomePage.scss";
 import { RootState } from "../redux/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGetPaginatedVideosQuery } from "../redux/VideoAPI";
 import useShowLoader from "../hooks/useShowLoader";
+import LikedVideosPopover from "../modals/LikedVideosPopover";
+import withNavSideBar from "../hoc/withNavSideBar";
 
 function HomePage() {
   const { showSidebar } = useSelector((state: RootState) => state.appState);
@@ -49,8 +49,6 @@ function HomePage() {
 
   return (
     <>
-      <NavBar />
-      <div className={`container home  ${showSidebar ? "overlay" : ""}`}>
         <div className="videos">
           {videos?.map((video: video,index:number) => {
             {console.log("index",index,data?.totalVideos-1)}
@@ -70,10 +68,8 @@ function HomePage() {
             );
           })}
         </div>
-        <SideBar />
-      </div>
     </>
   );
 }
 
-export default HomePage;
+export default withNavSideBar(HomePage,{className:'home'});

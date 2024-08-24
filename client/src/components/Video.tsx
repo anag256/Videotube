@@ -17,24 +17,25 @@ export interface video {
   owner: channel;
   views: number;
   isChannelDetailsVideo?: boolean;
+  disableScalingOnHover?:boolean
 }
 interface ValidRefTarget {
   contains(target: EventTarget | null): any;
 }
 const Video = forwardRef((props:video, ref:any) => {
-  const { title, _id, thumbnail, description, createdAt, owner, views } = props;
+  const { title, _id, thumbnail, description, createdAt, owner, views,disableScalingOnHover } = props;
   const navigate = useNavigate();
   const goToChannel = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     console.log("channel", `channel/${owner.username}`);
-    navigate(`/channel/${owner.username}`, { replace: true });
+    navigate(`/channel/${owner.username}`);
   };
   console.log("publisheedDate", createdAt);
   return (
     <div
-      className={`video ${ref && "hola"}`}
+      className={`video ${disableScalingOnHover && "disable-scaling"}`}
       key={_id}
-      onClick={() => navigate(`/video/${_id}`, { replace: true })}
+      onClick={() => navigate(`/video/${_id}`)}
       ref={ref}
     >
       <div className="thumbnail">
@@ -42,7 +43,7 @@ const Video = forwardRef((props:video, ref:any) => {
       </div>
 
       <div className="vid_metadata">
-        {<img src={owner.avatar} alt="channel_avatar" onClick={goToChannel} />}
+        {<img src={owner.avatar} alt="channel_avatar" onClick={goToChannel} referrerPolicy="no-referrer" loading="lazy"/>}
         <div>
           <h5>{title}</h5>
           {<h6>{owner.username}</h6>}

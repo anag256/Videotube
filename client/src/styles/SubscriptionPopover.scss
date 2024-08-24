@@ -1,0 +1,20 @@
+@import "mixin";
+.subsList{
+   .subs{
+    border: 1px solid #fff;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    justify-content: flex-start;
+    width: 100%;
+    >img{
+        @include square(4rem);
+        border-radius: 50%;
+    }
+    >div{
+        flex: 1;
+        >h6{
+            margin-top: 0.5rem;
+        }
+    }
+    }
+}

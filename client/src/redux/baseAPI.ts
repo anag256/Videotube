@@ -13,6 +13,9 @@ export const baseAPI = createApi({
     "subscriptionDetail",
     "videoReactions",
     "paginatedVideos",
+    "watchHistory",
+    "likedVideos",
+    "subsAndSubsToDetails"
   ],
   endpoints: () => ({}),
 });

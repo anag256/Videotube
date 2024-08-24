@@ -1,25 +1,23 @@
 import React, { useEffect } from "react";
-import SideBar from "../components/SideBar";
-import NavBar from "../components/NavBar";
 import "../styles/ChannelDetails.scss";
 import Video, { video } from "../components/Video";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useGetUserProfileQuery } from "../redux/UserAPI";
-import { useParams } from "react-router-dom";
-import { preventDefaultEvent } from "../utils/utils";
-import { useDispatch } from "react-redux";
-import {  toggleVideoUploadpopup } from "../redux/appState";
+import { useNavigate, useParams } from "react-router-dom";
+import { popoverPath, preventDefaultEvent } from "../utils/utils";
 import VideoUploadForm from "../modals/VideoUploadForm";
 import useShowLoader from "../hooks/useShowLoader";
 import { useGetChannelVideosQuery } from "../redux/VideoAPI";
 import Subscription from "../components/Subscription";
+import withNavSideBar from "../hoc/withNavSideBar";
+import { VIDEO_UPLOAD_FORM } from "../constants/Actions";
 
 function ChannelDetailPage() {
-  const { showSidebar, user } = useSelector(
+  const { user } = useSelector(
     (state: RootState) => state.appState
   );
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { username } = useParams();
   const { data, isFetching, isError, error } = useGetUserProfileQuery(username);
   console.log("data",data)
@@ -31,7 +29,7 @@ function ChannelDetailPage() {
   useShowLoader(isFetching || isChannelVideosFetching);
   const onUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     preventDefaultEvent(e);
-    dispatch(toggleVideoUploadpopup());
+    navigate(popoverPath(VIDEO_UPLOAD_FORM));
   };
   useEffect(()=>{
     console.log("iserror",isError,error)
@@ -40,17 +38,14 @@ function ChannelDetailPage() {
 
   return (
     <>
-      <NavBar />
-      <div
-        className={`channelDetail container ${showSidebar ? " overlay " : ""}`}
-      >
+
         <div className="channelDetails">
           <div className="bg_thumbnail">
             <img src={data?.coverImage} loading="lazy" />
           </div>
           <div className="profile_details">
             <div className="profile_data">
-              <img className="avatar" src={data?.avatar} />
+              <img className="avatar" src={data?.avatar} referrerPolicy="no-referrer"/>
               <div>
                 <h3>{data?.fullName}</h3>
                 <h5>{data?.username}</h5>
@@ -94,11 +89,10 @@ function ChannelDetailPage() {
           </div>
 }
         </div>
-        <SideBar />
-      </div>
+
       <VideoUploadForm />
     </>
   );
 }
 
-export default ChannelDetailPage;
+export default withNavSideBar(ChannelDetailPage,{className:'channelDetail'});

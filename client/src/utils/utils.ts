@@ -12,8 +12,10 @@ import {
 } from "../constants/ValidationErrors";
 import { setToastData } from "../redux/appState";
 import { AppDispatch } from "../redux/store";
+import { createSearchParams } from "react-router-dom";
 
 export type field = "username" | "password" | "email";
+type popoverType = "liked-videos" | "watch-history" | "subscription-details" | "video-upload-form";
 
 const throttle = (fn: Function, wait: number = 300) => {
   let inThrottle: boolean,
@@ -104,7 +106,7 @@ const validationErrorMessages = {
   email: EMAIL_VALIDATION_ERROR,
 };
 
-function handleShowToast(dispatch:AppDispatch,result:any){
+function handleShowToast(dispatch: AppDispatch, result: any) {
   if (
     "error" in result &&
     "data" in result.error &&
@@ -133,11 +135,19 @@ function handleShowToast(dispatch:AppDispatch,result:any){
     );
   }
 }
+const popoverPath = (popoverType: popoverType) => ({
+  pathname: location.pathname,
+  search: createSearchParams({
+    popover: popoverType,
+  }).toString(),
+});
+
 export {
   throttle,
   formatPublishedDate,
   validateField,
   validationErrorMessages,
   preventDefaultEvent,
-  handleShowToast
+  handleShowToast,
+  popoverPath,
 };

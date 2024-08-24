@@ -31,11 +31,18 @@
         &:hover {
             transform: scale(1.13)
         }
+        &.disable-scaling{
+            &:hover{
+                transform: unset
+            }
+        }
+
     }
+
 
     .vid_metadata {
         @include flex(row, center, flex-start);
-
+        margin-top: 0.5rem;
         >img {
             height: 2.5rem;
             width: 2.5rem;

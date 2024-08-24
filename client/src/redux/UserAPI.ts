@@ -68,7 +68,7 @@ const UserAPI = baseAPI.injectEndpoints({
         url: `/subscribe/${channelID}`,
         method: `${action === UNSUBSCRIBE ? "DELETE" : "POST"}`,
       }),
-      invalidatesTags:["userProfile","subscriptionDetail"]
+      invalidatesTags:["userProfile","subscriptionDetail","subsAndSubsToDetails"]
     }),
     updateWatchHistory: builder.mutation({
       query: (videoID) => ({
@@ -76,7 +76,29 @@ const UserAPI = baseAPI.injectEndpoints({
         method: "PATCH",
         body: { videoID: videoID },
       }),
-      invalidatesTags: ["videoDetails"],
+      invalidatesTags: ["videoDetails","watchHistory"],
+    }),
+    refreshAccessToken:builder.mutation({
+      query: () => ({
+        url: "/user/refresh-access-token",
+        method: "POST",
+      }),
+      invalidatesTags:["currentUser"]
+    }),
+    getWatchHistory:builder.query({
+      query: () => `user/watch-history`,
+      transformResponse: (res: any) => res.data,
+      providesTags:["watchHistory"]
+    }),
+    getLikedVideos:builder.query({
+      query: () => `user/liked`,
+      transformResponse: (res: any) => res.data,
+      providesTags:["likedVideos"]
+    }),
+    getSubscribersAndSubscriptionDetails:builder.query({
+      query: () => `user/subscriber-details`,
+      transformResponse: (res: any) => res.data,
+      providesTags:["subsAndSubsToDetails"]
     }),
   }),
   overrideExisting: false,
@@ -91,5 +113,9 @@ export const {
   useGetUserProfileQuery,
   useSubscribeMutation,
   useGetSubscriptionDetailsQuery,
-  useUpdateWatchHistoryMutation
+  useUpdateWatchHistoryMutation,
+  useGetLikedVideosQuery,
+  useGetWatchHistoryQuery,
+  useGetSubscribersAndSubscriptionDetailsQuery,
+  useRefreshAccessTokenMutation
 } = UserAPI;

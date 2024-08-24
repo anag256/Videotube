@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
-import { changePassword, getCurrentUser, getSubscribersAndSubscriptions, getUserChannelProfile, getUserWatchHistory, googleSignIn, loginUser, logoutUser, refreshAccessToken, registerUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage, updateWatchHistory } from "../controllers/user.controller.js";
+import { changePassword, getCurrentUser, getLikedVideos, getSubscribersAndSubscriptions, getSubscribersAndSubscriptionsDetails, getUserChannelProfile, getUserWatchHistory, googleSignIn, loginUser, logoutUser, refreshAccessToken, registerUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage, updateWatchHistory } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -32,5 +32,7 @@ router.route("/watch-history").patch(verifyJWT,updateWatchHistory);
 router.route("/watch-history").get(verifyJWT,getUserWatchHistory);
 router.route("/:username/profile").get(verifyJWT,getUserChannelProfile);
 router.route("/:id/subscription-detail").get(verifyJWT,getSubscribersAndSubscriptions);
+router.route("/liked").get(verifyJWT,getLikedVideos);
+router.route("/subscriber-details").get(verifyJWT,getSubscribersAndSubscriptionsDetails);
 
 export default router;

@@ -1,14 +1,16 @@
 import ModalPopover from "./ModalPopover";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Field } from "../commonTypes";
-import { preventDefaultEvent } from "../utils/utils";
+import { popoverPath, preventDefaultEvent } from "../utils/utils";
 import { useUploadVideoMutation } from "../redux/VideoAPI";
 import useShowLoader from "../hooks/useShowLoader";
 import { useDispatch } from "react-redux";
-import { setToastData, toggleVideoUploadpopup } from "../redux/appState";
+import { setToastData } from "../redux/appState";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import "../styles/videoUploadForm.scss";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { VIDEO_UPLOAD_FORM } from "../constants/Actions";
 
 interface VideoData {
   title: string;
@@ -27,16 +29,30 @@ const initialVideoFormData = {
 
 const YT_EMBED_URL = "https://www.youtube.com/embed/";
 
+const customStyles = {
+  overlay: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+  },
+  content: {
+    background: "#555555",
+    borderRadius: "2rem",
+    width: "max-content",
+    position: "absolute",
+    right: "auto",
+    bottom: "auto",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%,-50%)",
+  },
+};
 function VideoUploadForm() {
   const [videoFormData, setVideoFormData] =
     useState<VideoData>(initialVideoFormData);
-  const { showVideoUploadPopup } = useSelector(
-    (state: RootState) => state.appState
-  );
-
   const [uploadVid, { isLoading, isError, error, isSuccess }] =
     useUploadVideoMutation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   useShowLoader(isLoading);
   const videoUploadFormFields: Field[] = [
     {
@@ -138,6 +154,11 @@ function VideoUploadForm() {
     setVideoFormData(initialVideoFormData);
   };
 
+  const removeQueryParam = useCallback(() => {
+    searchParams.delete("popover");
+    setSearchParams(searchParams);
+  }, [searchParams]);
+
   const onUpload = async (e: React.MouseEvent<HTMLButtonElement>) => {
     preventDefaultEvent(e);
     const result: any = await uploadVid(videoFormData);
@@ -171,12 +192,15 @@ function VideoUploadForm() {
       );
     }
     resetFields();
-    dispatch(toggleVideoUploadpopup());
+    removeQueryParam();
   };
 
-  if (!showVideoUploadPopup) return;
   return (
-    <ModalPopover isOpen onClose={() => dispatch(toggleVideoUploadpopup())}>
+    <ModalPopover
+      isOpen={searchParams.get("popover") === VIDEO_UPLOAD_FORM}
+      onClose={() => removeQueryParam()}
+      style={customStyles}
+    >
       <form className="video-upload">
         {videoUploadFormFields.map((field: Field, index: number) => (
           <div key={index}>{SwitchInputTypes(field)}</div>

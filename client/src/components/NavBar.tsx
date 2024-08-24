@@ -13,6 +13,7 @@ import { gapi } from "gapi-script";
 import { getAuth, signOut } from "firebase/auth";
 import { useLogoutUserMutation } from "../redux/UserAPI";
 import { preventDefaultEvent } from "../utils/utils";
+import { baseAPI } from "../redux/baseAPI";
 
 const NavBar = () => {
   const { theme, toggleTheme } = useThemeContext();
@@ -29,7 +30,9 @@ const logout=async (e:React.MouseEvent<HTMLButtonElement>)=>{
   preventDefaultEvent(e);
 
   await logoutUser(undefined);
+  dispatch(baseAPI.util.resetApiState());
   navigate('/login',{replace:true});
+
   console.log("moving",isSuccess,isError);
 
 

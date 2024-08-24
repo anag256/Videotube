@@ -407,7 +407,7 @@ const getUserWatchHistory = asyncHandler(async (req, res, next) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, watchHistory, "Watch History fetched successfully")
+      new ApiResponse(200, watchHistory[0], "Watch History fetched successfully")
     );
 });
 
@@ -454,69 +454,204 @@ const googleSignIn = asyncHandler(async (req, res, next) => {
     );
 });
 
-const getSubscribersAndSubscriptions=asyncHandler(async(req,res,next)=>{
-  const {id}=req.params;
-  console.log("id here",id)
-  const subscriptionDetails=await User.aggregate([
+const getSubscribersAndSubscriptions = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  console.log("id here", id);
+  const subscriptionDetails = await User.aggregate([
     {
-    $lookup: {
-      from: 'subscriptions',
-      localField: '_id',
-      foreignField: 'channel',
-      as: 'subscribers',
-
-    },
-
-
-  },{
-    $lookup: {
-      from: 'subscriptions',
-      localField: '_id',
-      foreignField: 'subscriber',
-      as: 'subscribedTo',
-
-    },
-
-
-  },
-  {
-    $match: {
-      _id:new mongoose.Types.ObjectId(id)
-    },
-  },
-  {
-    $project:{
-      subscribers:1,
-      subscribedTo:1,
-
-    }
-},
-  {
-    $addFields: {
-      SubscribersCount: {
-        $size: "$subscribers",
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscribers",
       },
-      SubscribedToCount: {
-        $size: "$subscribedTo",
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo",
       },
-      isSubscribedTo: {
-        $cond: {
-          if: {
-            $in: [
-              new mongoose.Types.ObjectId(req.user?._id),
-              "$subscribers.subscriber",
-            ],
+    },
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        subscribers: 1,
+        subscribedTo: 1,
+      },
+    },
+    {
+      $addFields: {
+        SubscribersCount: {
+          $size: "$subscribers",
+        },
+        SubscribedToCount: {
+          $size: "$subscribedTo",
+        },
+        isSubscribedTo: {
+          $cond: {
+            if: {
+              $in: [
+                new mongoose.Types.ObjectId(req.user?._id),
+                "$subscribers.subscriber",
+              ],
+            },
+            then: true,
+            else: false,
           },
-          then: true,
-          else: false,
         },
       },
     },
-  },
+  ]);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        subscriptionDetails[0],
+        "subscription details fetched successfully"
+      )
+    );
+});
 
- ]);
-  return  res.status(200).json(new ApiResponse(200,subscriptionDetails[0],"subscription details fetched successfully"))
-})
+const getLikedVideos = asyncHandler(async (req, res, next) => {
+  const likedVideos = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req?.user._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "likes",
+        localField: "_id",
+        foreignField: "likedBy",
+        as: "likedVideosData",
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "likedVideosData.video",
+        foreignField: "_id",
+        as: "likedVideos",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    username: 1,
+                    avatar: 1,
+                    fullName: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $addFields: {
+              owner: {
+                $first: "$owner",
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        username: 1,
+        avatar: 1,
+        fullName: 1,
+        likedVideos: 1,
+      },
+    },
+  ]);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, likedVideos[0], "Liked Videos fetched successfully")
+    );
+});
+
+const getSubscribersAndSubscriptionsDetails = asyncHandler(
+  async (req, res, next) => {
+    const subscriptions = await User.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req?.user._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "_id",
+          foreignField: "channel",
+          as: "subscribers",
+        },
+      },
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "_id",
+          foreignField: "subscriber",
+          as: "subscribedTo",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "subscribers.subscriber",
+          foreignField: "_id",
+          as: "subscribers",
+        },
+
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "subscribedTo.channel",
+          foreignField: "_id",
+          as: "subscribedTo",
+        },
+      },
+      {
+        $project: {
+          "subscribers._id": 1,
+          "subscribers.fullName": 1,
+          "subscribers.avatar": 1,
+          "subscribers.username": 1,
+          "subscribedTo._id": 1,
+          "subscribedTo.fullName": 1,
+          "subscribedTo.avatar": 1,
+          "subscribedTo.username": 1,
+          username: 1,
+          avatar: 1,
+        },
+      },
+    ]);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          subscriptions[0],
+          "Subscription details fetched successfully"
+        )
+      );
+  }
+);
 
 export {
   registerUser,
@@ -532,5 +667,7 @@ export {
   getUserWatchHistory,
   getUserChannelProfile,
   googleSignIn,
-  getSubscribersAndSubscriptions
+  getSubscribersAndSubscriptions,
+  getLikedVideos,
+  getSubscribersAndSubscriptionsDetails,
 };
