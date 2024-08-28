@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
 import {
-  Navigate,
   Route,
   Routes,
   useLocation,
@@ -8,6 +7,7 @@ import {
 } from "react-router-dom";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import loaderGif from "./assets/loading.gif";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const ChannelDetailPage = lazy(() => import("./pages/ChannelDetailPage"));
 const VideoDetailPage = lazy(() => import("./pages/VideoDetailPage"));
@@ -25,9 +25,6 @@ import Loader from "./components/Loader";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 import PopoverPage from "./pages/PopoverPage";
-import LikedVideosPopover from "./modals/LikedVideosPopover";
-import WatchHistoryPopover from "./modals/watchHistoryPopover";
-import SubscriptionPopover from "./modals/SubscriptionPopover";
 
 function App() {
   const { data, isFetching, isError, error } =
@@ -78,7 +75,7 @@ function App() {
   }, [isAuthenticated]);
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div>{loaderGif}</div>}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />

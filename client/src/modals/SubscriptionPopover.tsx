@@ -40,7 +40,6 @@ function SubscriptionPopover() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, isFetching } =
     useGetSubscribersAndSubscriptionDetailsQuery(undefined);
-    const { user } = useSelector((state: RootState) => state.appState);
   useShowLoader(isFetching);
   const onClose = useCallback(() => {
     searchParams.delete("popover");
