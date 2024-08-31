@@ -3,8 +3,10 @@ import { Subscription } from "../models/subscription.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
+import { pub } from "../redis/index.js";
 
 const subscribeChannel = asyncHandler(async (req, res, next) => {
+  try {
     const subscribeTo = req.params.channel;
     const subscriber = req.user;
     if(subscribeTo===subscriber) throw new ApiError(403,"User cannot subscribe to your own channel")
@@ -17,11 +19,17 @@ const subscribeChannel = asyncHandler(async (req, res, next) => {
       subscriber: new mongoose.Types.ObjectId(subscriber?._id),
       channel: new mongoose.Types.ObjectId(subscribeTo),
     });
+    await pub.publish(`MESSAGES-${req.params.channel}`, JSON.stringify({ message:`${req?.user?.username} subscribed to your channel` }));
     return res
       .status(200)
       .json(
         new ApiResponse(200, subscription, "Channel Subscribed successfully")
       );
+  } catch (error) {
+    throw new ApiError("Service is down. Please try again later");
+
+  }
+
   });
 
 
@@ -43,4 +51,6 @@ const subscribeChannel = asyncHandler(async (req, res, next) => {
         new ApiResponse(200, subscription, "Channel Unsubscribed successfully")
       );
   });
+
+
   export {subscribeChannel,unsubscribeChannel};

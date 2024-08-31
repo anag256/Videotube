@@ -100,6 +100,51 @@ const UserAPI = baseAPI.injectEndpoints({
       transformResponse: (res: any) => res.data,
       providesTags:["subsAndSubsToDetails"]
     }),
+    getMessages: builder.query({
+      queryFn: async () => ({data: null}),
+      keepUnusedDataFor:0,
+      async onCacheEntryAdded(
+        arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+      ) {
+        // create a websocket connection when the cache subscription starts
+        const evtSource = new EventSource(`/api/stream`)
+        try {
+          // wait for the initial query to resolve before proceeding
+          await cacheDataLoaded
+
+          // when data is received from the socket connection to the server,
+          // if it is a message and for the appropriate channel,
+          // update our query result with the received message
+          const listener = (event: MessageEvent) => {
+            const data = JSON.parse(event.data)
+            console.log("data",data);
+            if (data === '') return;
+            updateCachedData((draft) => {
+              console.log("draft before",draft)
+              draft=data;
+              return draft;
+              console.log("draft ater",draft)
+            })
+          }
+          const onError = () => {
+            evtSource.close();
+        };
+
+          evtSource.addEventListener('message', listener);
+          evtSource.addEventListener('error', onError);
+           // cacheEntryRemoved will resolve when the cache subscription is no longer active
+        await cacheEntryRemoved
+        // perform cleanup steps once the `cacheEntryRemoved` promise resolves
+        evtSource.close();
+        } catch(e) {
+          // no-op in case `cacheEntryRemoved` resolves before `cacheDataLoaded`,
+          // in which case `cacheDataLoaded` will throw
+          console.error(e);
+        }
+
+      },
+    }),
   }),
   overrideExisting: false,
 });
@@ -117,5 +162,6 @@ export const {
   useGetLikedVideosQuery,
   useGetWatchHistoryQuery,
   useGetSubscribersAndSubscriptionDetailsQuery,
-  useRefreshAccessTokenMutation
+  useRefreshAccessTokenMutation,
+  useGetMessagesQuery
 } = UserAPI;
