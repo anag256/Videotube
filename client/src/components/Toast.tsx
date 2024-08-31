@@ -9,7 +9,6 @@ import { setToastData } from "../redux/appState";
 function Toast() {
   const { toast } = useSelector((state: RootState) => state.appState);
   const dispatch=useDispatch();
-  console.log("toast",toast)
 
   useEffect(()=>{
    const timeout= setTimeout(()=>{

@@ -5,8 +5,6 @@ import { useCallback } from "react";
 import { useGetSubscribersAndSubscriptionDetailsQuery } from "../redux/UserAPI";
 import useShowLoader from "../hooks/useShowLoader";
 import "../styles/SubscriptionPopover.scss";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
 import Subscription from "../components/Subscription";
 
 const customStyles = {

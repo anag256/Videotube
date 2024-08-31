@@ -19,18 +19,15 @@ export interface video {
   isChannelDetailsVideo?: boolean;
   disableScalingOnHover?:boolean
 }
-interface ValidRefTarget {
-  contains(target: EventTarget | null): any;
-}
+
 const Video = forwardRef((props:video, ref:any) => {
-  const { title, _id, thumbnail, description, createdAt, owner, views,disableScalingOnHover } = props;
+  const { title, _id, thumbnail, createdAt, owner, views,disableScalingOnHover } = props;
   const navigate = useNavigate();
   const goToChannel = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    console.log("channel", `channel/${owner.username}`);
     navigate(`/channel/${owner.username}`);
   };
-  console.log("publisheedDate", createdAt);
+
   return (
     <div
       className={`video ${disableScalingOnHover && "disable-scaling"}`}

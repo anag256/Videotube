@@ -4,7 +4,7 @@ import { RootState } from "../redux/store";
 import NavBar from "../components/NavBar";
 import SideBar from "../components/SideBar";
 import LikedVideosPopover from "../modals/LikedVideosPopover";
-import WatchHistoryPopover from "../modals/watchHistoryPopover";
+import WatchHistoryPopover from "../modals/WatchHistoryPopover";
 import SubscriptionPopover from "../modals/SubscriptionPopover";
 
 // Define props including className

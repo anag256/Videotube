@@ -35,14 +35,6 @@ interface navItem {
   icon: ReactElement;
 }
 
-const mapIndexToListItem = {
-  Home: 1,
-  Liked_Videos: 2,
-  History: 3,
-  My_Content: 4,
-  Subscribers: 5,
-  Settings: 6,
-};
 const SideBar = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const { showSidebar, user } = useSelector(
@@ -131,7 +123,6 @@ const SideBar = () => {
     >
       <ul>
         {navList.map((navItem: navItem) => {
-          console.log("activeIndex", activeIndex, navItem.id);
           return (
             <li
               key={navItem.id}

@@ -18,8 +18,6 @@ const generateAccessAndRefreshTokens = async (user) => {
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
     user.refreshToken = refreshToken;
-    console.log("generated Access token", accessToken);
-    console.log("generated Refresh token", refreshToken);
     await user.save({ validateBeforeSave: false }); //so that password etc doesnot kick in as it has not been changed
     return { accessToken, refreshToken };
   } catch (err) {
@@ -46,7 +44,6 @@ const registerUser = asyncHandler(async (req, res, next) => {
   if (existingUser) throw new ApiError(409, "User already exists");
 
   let isFilesEmpty = Object.keys(req?.files).length === 0;
-  console.log("files", path.resolve() + "/files/defaults/man.png");
 
   if (isFilesEmpty) {
     fs.copyFileSync("./files/defaults/man.png", "./files/images/man.png");
@@ -106,7 +103,6 @@ const loginUser = asyncHandler(async (req, res, next) => {
   if (!isPasswordValid) throw new ApiError(404, "Invalid user credentials");
   const { accessToken, refreshToken } =
     await generateAccessAndRefreshTokens(user);
-  console.log("accessToken", accessToken);
   const loggedInUser = await User.findById(user._id).select(MONGODB_EXCLUDE);
   return res
     .status(200)
@@ -167,11 +163,8 @@ const refreshAccessToken = asyncHandler(async (req, res, next) => {
 
 const changePassword = asyncHandler(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
-  console.log("id", req.user._id);
   const user = await User.findById(req.user._id);
-  console.log("user", user);
   const isPasswordValid = await user.isPasswordCorrect(oldPassword);
-  console.log("isPasswordCorrect", isPasswordValid);
   if (!isPasswordValid) throw new ApiError(400, "Invalid Password");
   if (newPassword === oldPassword)
     throw new ApiError(400, "Entered password same as old password");
@@ -434,8 +427,6 @@ const googleSignIn = asyncHandler(async (req, res, next) => {
   const { accessToken, refreshToken } =
     await generateAccessAndRefreshTokens(user);
 
-  console.log("accessToken", accessToken);
-  console.log("refreshTokenToken", refreshToken);
   const loggedInUser = await User.findById(user._id).select(MONGODB_EXCLUDE);
   return res
     .status(200)
@@ -456,7 +447,6 @@ const googleSignIn = asyncHandler(async (req, res, next) => {
 
 const getSubscribersAndSubscriptions = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  console.log("id here", id);
   const subscriptionDetails = await User.aggregate([
     {
       $lookup: {

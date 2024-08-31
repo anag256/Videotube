@@ -35,17 +35,13 @@ function App() {
   const [refreshAccessToken] = useRefreshAccessTokenMutation();
 
   const location = useLocation();
-  console.log("location", location);
   const { user, toast } = useSelector((state: RootState) => state.appState);
   const { isAuthenticated } = user;
   const {currentData:messages}=useGetMessagesQuery(undefined,{skip:!isAuthenticated});
   const dispatch = useDispatch();
-  console.log("messages outsideuseeect",messages)
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("data", data, isError, error);
     if (data && data?._id && !isFetching && !isError) {
-      console.log("current user", data);
       dispatch(
         setCurrentUser({
           userId: data?._id,
@@ -68,7 +64,7 @@ function App() {
 
   useEffect(() => {
    async function refreshToken(){
-    if (isError && error?.data.message === "Access Token Expired") {
+    if (isError && (error as any)?.data.message === "Access Token Expired") {
       await refreshAccessToken(undefined);
     }
    }
@@ -77,13 +73,10 @@ function App() {
 
   useEffect(() => {
     if (isAuthenticated) navigate(location.state.from || '/');
-    console.log("isAuth", isAuthenticated);
   }, [isAuthenticated]);
 
   useEffect(()=>{
-    console.log("messages in useffect",messages );
     if(!messages) return;
-    console.log("messages",messages );
     handleShowToast(dispatch,{data:messages});
   },[messages])
   return (

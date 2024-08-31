@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "../styles/ChannelDetails.scss";
 import Video, { video } from "../components/Video";
 import { useSelector } from "react-redux";
@@ -19,8 +19,7 @@ function ChannelDetailPage() {
   );
   const navigate = useNavigate();
   const { username } = useParams();
-  const { data, isFetching, isError, error } = useGetUserProfileQuery(username);
-  console.log("data",data)
+  const { data, isFetching } = useGetUserProfileQuery(username);
   const { data: channelVideos, isFetching: isChannelVideosFetching,isError:isChannelVideosError,error:channelVideosError } =
     useGetChannelVideosQuery(data?._id, {
       skip: !data,
@@ -31,10 +30,7 @@ function ChannelDetailPage() {
     preventDefaultEvent(e);
     navigate(popoverPath(VIDEO_UPLOAD_FORM));
   };
-  useEffect(()=>{
-    console.log("iserror",isError,error)
-  },[isError,error])
-// console.log("iserror",isError,error)
+
 
   return (
     <>
@@ -66,7 +62,7 @@ function ChannelDetailPage() {
             )}
           </div>
           {
-            isChannelVideosError && <p className="no-videos-error">{channelVideosError.data.message}</p>
+            isChannelVideosError && <p className="no-videos-error">{(channelVideosError as any)?.data.message}</p>
           }
           {!isChannelVideosError &&
           <div className="videos">

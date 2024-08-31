@@ -1,15 +1,13 @@
 import ModalPopover from "./ModalPopover";
 import { useCallback, useState } from "react";
 import { Field } from "../commonTypes";
-import { popoverPath, preventDefaultEvent } from "../utils/utils";
+import {  preventDefaultEvent } from "../utils/utils";
 import { useUploadVideoMutation } from "../redux/VideoAPI";
 import useShowLoader from "../hooks/useShowLoader";
 import { useDispatch } from "react-redux";
 import { setToastData } from "../redux/appState";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
 import "../styles/videoUploadForm.scss";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {  useSearchParams } from "react-router-dom";
 import { VIDEO_UPLOAD_FORM } from "../constants/Actions";
 
 interface VideoData {
@@ -48,11 +46,10 @@ const customStyles = {
 function VideoUploadForm() {
   const [videoFormData, setVideoFormData] =
     useState<VideoData>(initialVideoFormData);
-  const [uploadVid, { isLoading, isError, error, isSuccess }] =
+  const [uploadVid, { isLoading }] =
     useUploadVideoMutation();
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   useShowLoader(isLoading);
   const videoUploadFormFields: Field[] = [
     {
@@ -89,8 +86,6 @@ function VideoUploadForm() {
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     let { value, name, type, files } = e.target as HTMLInputElement;
-    console.log("value", type !== "file" ? value : (files as FileList)[0]);
-    console.log("name", name);
     if (name === "videoPath" && value && value !== "") {
       value = value.includes("embed")
         ? value
@@ -162,8 +157,6 @@ function VideoUploadForm() {
   const onUpload = async (e: React.MouseEvent<HTMLButtonElement>) => {
     preventDefaultEvent(e);
     const result: any = await uploadVid(videoFormData);
-    console.log("isError", isError, error);
-    console.log("isSuccess", isSuccess);
     if (
       "error" in result &&
       "data" in result.error &&

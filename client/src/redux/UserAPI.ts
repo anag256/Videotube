@@ -104,7 +104,7 @@ const UserAPI = baseAPI.injectEndpoints({
       queryFn: async () => ({data: null}),
       keepUnusedDataFor:0,
       async onCacheEntryAdded(
-        arg,
+        _arg,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
       ) {
         // create a websocket connection when the cache subscription starts
@@ -118,13 +118,10 @@ const UserAPI = baseAPI.injectEndpoints({
           // update our query result with the received message
           const listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data)
-            console.log("data",data);
             if (data === '') return;
             updateCachedData((draft) => {
-              console.log("draft before",draft)
               draft=data;
               return draft;
-              console.log("draft ater",draft)
             })
           }
           const onError = () => {

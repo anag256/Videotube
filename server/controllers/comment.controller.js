@@ -33,10 +33,8 @@ const getComments = asyncHandler(async (req, res, next) => {
 
 const removeComment = asyncHandler(async (req, res, next) => {
   const { commentID } = req.body;
-  console.log("commentId",commentID);
   async function deleteComment(id) {
     const comment = await Comment.findById(id);
-    console.log("comment",comment?.replies)
     for (let replyId of comment?.replies) {
       deleteComment(replyId);
     }

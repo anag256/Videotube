@@ -14,7 +14,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import useShowLoader from "../hooks/useShowLoader";
 import { video } from "../components/Video";
-import { formatPublishedDate } from "../utils/utils";
+import { formatPublishedDate, shortenText } from "../utils/utils";
 import CommentInput from "../components/CommentInput";
 import {
   useAddCommentMutation,
@@ -51,7 +51,7 @@ const VideoListItem = ({
       <img src={thumbnail} />
 
       <div>
-        <h4>{title}</h4>
+        <h4>{shortenText(title,40)}</h4>
         <h5>{owner?.username}</h5>
         <div>
           <h6>{views} views</h6>
@@ -78,7 +78,7 @@ function CommentContainer({ videoId }: commentContainerProps) {
     commentText: string,
     parentComment: string | null
   ) => {
-    const result = await addComment({
+     await addComment({
       comment: commentText,
       commentedBy: user.userId,
       videoId: videoId,

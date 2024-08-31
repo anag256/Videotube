@@ -5,7 +5,6 @@ import '../styles/Loader.scss';
 
 function Loader() {
   const { showLoader } = useSelector((state: RootState) => state.appState);
-  console.log("in loader",showLoader);
   if(!showLoader) return;
   return  <div className="backdrop"><img src={loaderGif} className="loader"/></div>;
 }

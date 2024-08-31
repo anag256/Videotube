@@ -19,7 +19,6 @@ const removeDislikeIfExists = async (userId, videoId) => {
 };
 const toggleDislike = asyncHandler(async (req, res, next) => {
   const { videoId } = req.body;
-  console.log("videoID in toggleDislike",videoId)
   const removeExistingDislike = await removeDislikeIfExists(
     req.user?._id,
     videoId

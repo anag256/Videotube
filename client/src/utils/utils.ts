@@ -1,4 +1,3 @@
-import { Dispatch } from "@reduxjs/toolkit";
 import { EMAIL, PASSWORD, USERNAME } from "../constants/LoginFormConstants";
 import {
   EMAIL_REGEX,

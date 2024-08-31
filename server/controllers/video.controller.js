@@ -40,7 +40,6 @@ const uploadVideo = asyncHandler(async (req, res, next) => {
 
 const getChannelVideos = asyncHandler(async (req, res, next) => {
   const { channel } = req.params;
-  console.log("channel", channel);
   const videos = await Video.find({
     owner: channel,
   }).select(MONGODB_EXCLUDE_PWD_REFRESHTOKEN);
@@ -76,7 +75,6 @@ const getRecommendationVideos = asyncHandler(async (req, res, next) => {
 
 const getPaginatedVideos = asyncHandler(async (req, res, next) => {
   const { page = 1, limit = 10 } = req.query;
-  console.log(page, limit);
   const skip = (page - 1) * limit;
   if (page < 1 || limit < 1) {
     return res
@@ -101,7 +99,6 @@ const getPaginatedVideos = asyncHandler(async (req, res, next) => {
 
 const getVideoDetails = asyncHandler(async (req, res, next) => {
   const { videoID } = req.params;
-  console.log("videoid", videoID);
   const video = await Video.findById(videoID).populate({
     path: "owner",
     select: MONGODB_EXCLUDE,

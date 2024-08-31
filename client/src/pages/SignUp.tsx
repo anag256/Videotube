@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "../styles/Signup.scss";
 import withForm from "../hoc/withForm";
 import { useRegisterUserMutation } from "../redux/UserAPI";
-import { setToastData } from "../redux/appState";
 import { useDispatch } from "react-redux";
 import {
   field,
@@ -60,8 +59,6 @@ function SignUp() {
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     const { value, name, type, files } = e.target as HTMLInputElement;
-    console.log("value", type !== "file" ? value : (files as FileList)[0]);
-    console.log("name", name);
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: type !== "file" ? value : (files as FileList)[0],
@@ -188,7 +185,6 @@ function SignUp() {
     preventDefaultEvent(e);
     const result: any = await registerUser(formData);
     resetFields();
-    console.log(result);
     handleShowToast(dispatch, result);
   };
   return (

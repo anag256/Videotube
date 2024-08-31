@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../firebase";
 import withForm from "../hoc/withForm";
-import { setCurrentUser, setToastData } from "../redux/appState";
+import { setCurrentUser } from "../redux/appState";
 import { useGoogleSignInMutation, useLoginUserMutation } from "../redux/UserAPI";
 import useShowLoader from "../hooks/useShowLoader";
 import { handleShowToast, preventDefaultEvent } from "../utils/utils";
@@ -25,7 +25,7 @@ function Login() {
   const dispatch = useDispatch();
   const [loginData, setLogindata] = useState<LoginFormData>(initialLoginData);
   const [googleSignIn]=useGoogleSignInMutation();
-  const [loginUser, { isLoading, isSuccess, isError, error }] =
+  const [loginUser, { isLoading}] =
     useLoginUserMutation();
 
   useShowLoader(isLoading);
@@ -35,10 +35,8 @@ function Login() {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider);
-      console.log("google res",result);
-      const data=await googleSignIn(result.user);
+      const data:any=await googleSignIn(result.user);
       dispatch(setCurrentUser({ userId:data.data.user._id,username:data.data.user.username,avatar:data.data.user.avatar,isAuthenticated: true }));
-      console.log(result);
     } catch (err) {
       console.error(err);
     }
@@ -50,8 +48,6 @@ function Login() {
   const onLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     preventDefaultEvent(e);
     const result: any = await loginUser(loginData);
-    console.log("isError", isError, error);
-    console.log("isSuccess", isSuccess);
     handleShowToast(dispatch,result);
     resetFields();
   };

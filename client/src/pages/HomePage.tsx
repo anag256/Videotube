@@ -1,15 +1,11 @@
-import { useSelector } from "react-redux";
 import Video, { video } from "../components/Video";
 import "../styles/HomePage.scss";
-import { RootState } from "../redux/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGetPaginatedVideosQuery } from "../redux/VideoAPI";
 import useShowLoader from "../hooks/useShowLoader";
-import LikedVideosPopover from "../modals/LikedVideosPopover";
 import withNavSideBar from "../hoc/withNavSideBar";
 
 function HomePage() {
-  const { showSidebar } = useSelector((state: RootState) => state.appState);
   const [page, setPage] = useState(1);
   const [videos, setVideos] = useState([]);
   const [hasMore, setHasMore] = useState(false);
@@ -23,12 +19,10 @@ function HomePage() {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          console.log("visible");
           setPage((prev) => prev + 1);
         }
       },{threshold:1});
       if (node) observer.current.observe(node);
-      console.log("node", node);
     },
     [hasMore, isFetching]
   );
@@ -36,23 +30,16 @@ function HomePage() {
   useEffect(() => {
     if (data && !isFetching) {
       setHasMore(data?.totalVideos> data?.currentPage*data?.limit)
-      console.log("data.videos.length",data?.totalVideos,videos.length)
       setVideos((prev) => [...prev, ...data?.videos] as any);
 
     }
-    console.log("data.videos.length",data?.videos?.length);
   }, [isFetching, data]);
 
-  // useEffect(()=>{
-  //   setHasMore(data?.totalVideos>videos.length)
-  // },[videos])
 
   return (
     <>
         <div className="videos">
           {videos?.map((video: video,index:number) => {
-            {console.log("index",index,data?.totalVideos-1)}
-            {console.log("test",data?.totalVideos-1===index)}
             return (
               <Video
                 key={video._id}

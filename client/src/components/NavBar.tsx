@@ -23,7 +23,7 @@ const NavBar = () => {
   const toggleSidebarState = () => {
     dispatch(toggleSidebar());
   };
-const [logoutUser,{isSuccess,isError}]=useLogoutUserMutation();
+const [logoutUser]=useLogoutUserMutation();
 
 const logout=async (e:React.MouseEvent<HTMLButtonElement>)=>{
   preventDefaultEvent(e);
@@ -31,19 +31,12 @@ const logout=async (e:React.MouseEvent<HTMLButtonElement>)=>{
   await logoutUser(undefined);
   dispatch(baseAPI.util.resetApiState());
   navigate('/login',{replace:true});
-
-  console.log("moving",isSuccess,isError);
-
-
-  console.log("moving2",isSuccess,isError);
   dispatch(setCurrentUser({ ...user,isAuthenticated: false }));
 
 
 const auth = getAuth();
-console.log("auth",auth);
 if(auth.currentUser?.emailVerified){
   signOut(auth).then(() => {
-    console.log("signed out successfully");
     // dispatch(setCurrentUser({ isAuthenticated: false }))
   }).catch((error) => {
     console.error(error);
