@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   console.log("children",children)
   console.log("appState.isAuthenticated", user.isAuthenticated);
   return !user.isAuthenticated ? (
-    <Navigate to="/login" state={{ from: location }} replace />
+    <Navigate to="/login" state={{ from: location || '/' }} replace />
   ) : (
     children
   );

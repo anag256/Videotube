@@ -106,6 +106,11 @@ const validationErrorMessages = {
   email: EMAIL_VALIDATION_ERROR,
 };
 
+function shortenText(text:string,length:number){
+  if(text.length<=length) return text;
+  return text.substring(0,length-1) + '...';
+}
+
 function handleShowToast(dispatch: AppDispatch, result: any) {
   if (
     "error" in result &&
@@ -150,4 +155,5 @@ export {
   preventDefaultEvent,
   handleShowToast,
   popoverPath,
+  shortenText
 };

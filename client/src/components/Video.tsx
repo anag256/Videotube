@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import "../styles/Video.scss";
-import { formatPublishedDate } from "../utils/utils";
+import { formatPublishedDate, shortenText } from "../utils/utils";
 import { useNavigate } from "react-router-dom";
 export interface channel {
   username: string;
@@ -39,13 +39,13 @@ const Video = forwardRef((props:video, ref:any) => {
       ref={ref}
     >
       <div className="thumbnail">
-        <img src={thumbnail} alt={`${title}-thumbnail`} />
+        <img src={thumbnail} alt={`${title}-thumbnail`} loading="lazy"/>
       </div>
 
       <div className="vid_metadata">
         {<img src={owner.avatar} alt="channel_avatar" onClick={goToChannel} referrerPolicy="no-referrer" loading="lazy"/>}
         <div>
-          <h5>{title}</h5>
+          <h5>{shortenText(title,50)}</h5>
           {<h6>{owner.username}</h6>}
           <p>
             <span>{views} views</span>

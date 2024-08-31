@@ -104,7 +104,7 @@ function CommentContainer({ videoId }: commentContainerProps) {
       <hr />
       {comments &&
         comments.map((comment: comment) => (
-          <Comment commentData={comment} onAddComment={onAddComment}/>
+          <Comment key={comment._id} commentData={comment} onAddComment={onAddComment}/>
         ))}
     </section>
   );
