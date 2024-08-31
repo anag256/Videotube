@@ -13,6 +13,8 @@ services:
       - /app/node_modules
     ports:
       - "8000:8000"
+    depends_on:
+      - redis
 
 
   client:
@@ -26,6 +28,7 @@ services:
     stdin_open: true
     ports:
       - "5173:5173"
+
 
   nginx:
     build:
@@ -42,6 +45,7 @@ services:
 
   redis:
     image: redis/redis-stack:latest
+    container_name: redis
     ports:
       - "6379:6379"
       - "8001:8001"

@@ -102,12 +102,13 @@ const UserAPI = baseAPI.injectEndpoints({
     }),
     getMessages: builder.query({
       queryFn: async () => ({data: null}),
+      keepUnusedDataFor:0,
       async onCacheEntryAdded(
         arg,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
       ) {
         // create a websocket connection when the cache subscription starts
-        const evtSource = new EventSource(`/api/subscribe/stream`)
+        const evtSource = new EventSource(`/api/stream`)
         try {
           // wait for the initial query to resolve before proceeding
           await cacheDataLoaded
@@ -122,6 +123,7 @@ const UserAPI = baseAPI.injectEndpoints({
             updateCachedData((draft) => {
               console.log("draft before",draft)
               draft=data;
+              return draft;
               console.log("draft ater",draft)
             })
           }

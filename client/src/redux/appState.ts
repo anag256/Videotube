@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const appSlice = createSlice({
   name: "appState",
   initialState: {
-    showSidebar: true,
+    showSidebar: false,
     user: {
       userId: "",
       username:"",

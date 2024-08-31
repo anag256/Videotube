@@ -22,10 +22,11 @@ import videoRouter from "./router/video.routes.js";
 import commentRouter from "./router/comment.routes.js";
 import likesRouter from "./router/like.route.js";
 import dislikesRouter from "./router/dislike.route.js";
-
+import streamRouter from "./router/stream.routes.js";
 
 app.use("/user", userRouter);
 app.use("/subscribe", subscriptionRouter);
+app.use("/stream", streamRouter);
 app.use("/video",videoRouter);
 app.use("/comment",commentRouter);
 app.use("/video/like",likesRouter);

@@ -5,6 +5,7 @@
     transition: 0.5s ease-in;
     margin-bottom: 1rem;
 
+
     .thumbnail {
 
         >img {
@@ -27,7 +28,7 @@
     @media (min-width:768px) {
 
         margin: auto;
-
+        max-width: 19rem;
         &:hover {
             transform: scale(1.13)
         }

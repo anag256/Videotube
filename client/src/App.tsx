@@ -8,7 +8,7 @@ import {
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import loaderGif from "./assets/loading.gif";
-const HomePage = lazy(() => import("./pages/HomePage"));
+// const HomePage = lazy(() => import("./pages/HomePage"));
 const ChannelDetailPage = lazy(() => import("./pages/ChannelDetailPage"));
 const VideoDetailPage = lazy(() => import("./pages/VideoDetailPage"));
 import "./styles/App.scss";
@@ -16,6 +16,7 @@ import "./styles/Container.scss";
 import ProtectedRoute from "./components/ProtectedRoute";
 import {
   useGetCurrentUserQuery,
+  useGetMessagesQuery,
   useRefreshAccessTokenMutation,
 } from "./redux/UserAPI";
 import { useDispatch } from "react-redux";
@@ -25,16 +26,21 @@ import Loader from "./components/Loader";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 import PopoverPage from "./pages/PopoverPage";
+import { handleShowToast } from "./utils/utils";
+import HomePage from "./pages/HomePage";
 
 function App() {
   const { data, isFetching, isError, error } =
     useGetCurrentUserQuery(undefined);
   const [refreshAccessToken] = useRefreshAccessTokenMutation();
+
   const location = useLocation();
   console.log("location", location);
   const { user, toast } = useSelector((state: RootState) => state.appState);
   const { isAuthenticated } = user;
+  const {currentData:messages}=useGetMessagesQuery(undefined,{skip:!isAuthenticated});
   const dispatch = useDispatch();
+  console.log("messages outsideuseeect",messages)
   const navigate = useNavigate();
   useEffect(() => {
     console.log("data", data, isError, error);
@@ -70,9 +76,16 @@ function App() {
   }, [isError, error]);
 
   useEffect(() => {
-    if (isAuthenticated) navigate(location.state.from);
+    if (isAuthenticated) navigate(location.state.from || '/');
     console.log("isAuth", isAuthenticated);
   }, [isAuthenticated]);
+
+  useEffect(()=>{
+    console.log("messages in useffect",messages );
+    if(!messages) return;
+    console.log("messages",messages );
+    handleShowToast(dispatch,{data:messages});
+  },[messages])
   return (
     <>
       <Suspense fallback={<div>{loaderGif}</div>}>
