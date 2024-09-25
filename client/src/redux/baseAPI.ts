@@ -11,7 +11,6 @@ export const baseAPI = createApi({
     "videoDetails",
     "comments",
     "subscriptionDetail",
-    "videoReactions",
     "paginatedVideos",
     "watchHistory",
     "likedVideos",

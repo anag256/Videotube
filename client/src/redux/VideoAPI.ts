@@ -13,11 +13,11 @@ const VideoAPI = baseAPI.injectEndpoints({
       providesTags: ["channelVideos"],
     }),
     getPaginatedVideos: builder.query({
-      query: ({page = 1, limit = 10}) =>
+      query: ({ page = 1, limit = 10 }) =>
         `video/paginate?page=${page}&limit=${limit}`,
-      keepUnusedDataFor:0,
+      keepUnusedDataFor: 0,
       transformResponse: (res: any) => res.data,
-      providesTags:["paginatedVideos"]
+      providesTags: ["paginatedVideos"],
     }),
     getVideoDetails: builder.query({
       query: (videoID) => `/video/details/${videoID}`,
@@ -28,15 +28,49 @@ const VideoAPI = baseAPI.injectEndpoints({
     getVideoReactions: builder.query({
       query: (videoID) => `/video/reactions/${videoID}`,
       transformResponse: (res: any) => res.data,
-      providesTags: ["videoReactions"],
     }),
     toggleLikes: builder.mutation({
       query: (videoID) => ({
         url: "/video/like",
         method: "POST",
-        body: {videoId:videoID},
+        body: { videoId: videoID },
       }),
-      invalidatesTags: ["videoReactions","likedVideos"],
+      invalidatesTags: ["likedVideos"],
+      async onQueryStarted(videoID, { dispatch, queryFulfilled }) {
+        console.log("in onquery", videoID);
+        const patchResult = dispatch(
+          VideoAPI.util.updateQueryData(
+            "getVideoReactions",
+            videoID,
+            (draft) => {
+              console.log("draft in", draft);
+              draft = draft.isLiked
+                ? { ...draft, totalLikes: draft.totalLikes - 1, isLiked: false }
+                : {
+                    ...draft,
+                    totalLikes: draft.totalLikes + 1,
+                    isLiked: true,
+                    totalDislikes: draft.isDisliked
+                      ? draft.totalDislikes - 1
+                      : draft.totalDislikes,
+                    isDisliked: false,
+                  };
+              return draft;
+            }
+          )
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+
+          /**
+           * Alternatively, on failure you can invalidate the corresponding cache tags
+           * to trigger a re-fetch:
+           * dispatch(api.util.invalidateTags(['Post']))
+           */
+        }
+      },
     }),
     toggleDislikes: builder.mutation({
       query: (videoID) => ({
@@ -44,7 +78,47 @@ const VideoAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: { videoId: videoID },
       }),
-      invalidatesTags: ["videoReactions","likedVideos"],
+      invalidatesTags: ["likedVideos"],
+      async onQueryStarted(videoID, { dispatch, queryFulfilled }) {
+        console.log("in onquery", videoID);
+        const patchResult = dispatch(
+          VideoAPI.util.updateQueryData(
+            "getVideoReactions",
+            videoID,
+            (draft) => {
+              console.log("draft in", draft);
+              draft = draft.isDisliked
+                ? {
+                    ...draft,
+                    totalDislikes: draft.totalDislikes - 1,
+                    isDisliked: false,
+                  }
+                : {
+                    ...draft,
+                    totalDislikes: draft.totalDislikes + 1,
+                    isDisliked: true,
+                    totalLikes: draft.isLiked
+                      ? draft.totalLikes - 1
+                      : draft.totalLikes,
+                    isLiked: false,
+                  };
+
+              return draft;
+            }
+          )
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+
+          /**
+           * Alternatively, on failure you can invalidate the corresponding cache tags
+           * to trigger a re-fetch:
+           * dispatch(api.util.invalidateTags(['Post']))
+           */
+        }
+      },
     }),
     uploadVideo: builder.mutation({
       query: ({ title, description, isPublished, videoPath, thumbnail }) => {
@@ -60,7 +134,7 @@ const VideoAPI = baseAPI.injectEndpoints({
           body: formData,
         };
       },
-      invalidatesTags: ["channelVideos","paginatedVideos"],
+      invalidatesTags: ["channelVideos", "paginatedVideos"],
     }),
   }),
   overrideExisting: false,

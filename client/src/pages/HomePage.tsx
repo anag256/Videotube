@@ -4,12 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useGetPaginatedVideosQuery } from "../redux/VideoAPI";
 import useShowLoader from "../hooks/useShowLoader";
 import withNavSideBar from "../hoc/withNavSideBar";
+import loaderGif from "../assets/loading.gif";
 
 function HomePage() {
   const [page, setPage] = useState(1);
   const [videos, setVideos] = useState([]);
   const [hasMore, setHasMore] = useState(false);
-  const { data, isLoading ,isFetching} = useGetPaginatedVideosQuery({ page, limit: 4 });
+  const [showLoader,setShowLoader]=useState(false);
+  const { data, isLoading ,isFetching} = useGetPaginatedVideosQuery({ page, limit: 8 });
 
   const observer = useRef<IntersectionObserver | null>(null);
   useShowLoader(isLoading);
@@ -20,6 +22,7 @@ function HomePage() {
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
           setPage((prev) => prev + 1);
+          setShowLoader(true);
         }
       },{threshold:1});
       if (node) observer.current.observe(node);
@@ -31,6 +34,7 @@ function HomePage() {
     if (data && !isFetching) {
       setHasMore(data?.totalVideos> data?.currentPage*data?.limit)
       setVideos((prev) => [...prev, ...data?.videos] as any);
+      setShowLoader(false);
 
     }
   }, [isFetching, data]);
@@ -54,6 +58,9 @@ function HomePage() {
               />
             );
           })}
+          {
+            showLoader && <img src={loaderGif} className="loader"/>
+          }
         </div>
     </>
   );
