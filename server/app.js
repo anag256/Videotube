@@ -23,7 +23,9 @@ import commentRouter from "./router/comment.routes.js";
 import likesRouter from "./router/like.route.js";
 import dislikesRouter from "./router/dislike.route.js";
 import streamRouter from "./router/stream.routes.js";
+import { getServerHealth } from "./controllers/util.controller.js";
 
+app.get("/health-check",getServerHealth);
 app.use("/user", userRouter);
 app.use("/subscribe", subscriptionRouter);
 app.use("/stream", streamRouter);
