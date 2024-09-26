@@ -1,4 +1,4 @@
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const getServerHealth = asyncHandler(async (req, res, next) => {
   return res
@@ -6,4 +6,4 @@ const getServerHealth = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(200, {}, "Server is up & running"));
 });
 
-export {getServerHealth};
+export { getServerHealth };
