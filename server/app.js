@@ -15,6 +15,12 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("./files"));
 app.use(cookieParser());
+app.use((req, res, next) => {
+  if (req.path.includes("/stream")) {
+    res.setHeader("X-Accel-Buffering", "no");
+  }
+  next();
+});
 
 import userRouter from "./router/user.routes.js";
 import subscriptionRouter from "./router/subscription.routes.js";
@@ -24,6 +30,7 @@ import likesRouter from "./router/like.route.js";
 import dislikesRouter from "./router/dislike.route.js";
 import streamRouter from "./router/stream.routes.js";
 import { getServerHealth } from "./controllers/util.controller.js";
+
 
 app.get("/health-check",getServerHealth);
 app.use("/user", userRouter);
