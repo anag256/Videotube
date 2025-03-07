@@ -11,9 +11,11 @@
         .vidSection {
 
             iframe{
-                height: 28rem;
+                height: 20rem;
                 border-radius: 0.8rem;
-
+                @media(min-width:1024px){
+                    height: 28rem;
+                }
             }
             .videoDetails{
                 border: 2px solid;
